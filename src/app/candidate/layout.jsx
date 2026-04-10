@@ -7,13 +7,12 @@ import ToastContainer from "@/components/ui/Toast";
 import useAuthStore from "@/store/useAuthStore";
 
 function getPageLabel(pathname) {
-  if (pathname.includes("/create-exam")) return "Online Test";
-  if (pathname.includes("/candidates")) return "Candidates";
-  if (pathname.includes("/exams")) return "Exams";
+  if (pathname.includes("/exam/")) return "Online Test";
+  if (pathname.includes("/my-exams")) return "My Exams";
   return "Dashboard";
 }
 
-export default function EmployerLayout({ children }) {
+export default function CandidateLayout({ children }) {
   const { user, token, _hasHydrated } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -24,15 +23,19 @@ export default function EmployerLayout({ children }) {
       router.replace("/login");
       return;
     }
-    if (user && user.role !== "employer") {
-      router.replace("/candidate/dashboard");
+    if (user && user.role !== "candidate") {
+      router.replace("/employer/dashboard");
     }
   }, [_hasHydrated, token, user, router]);
 
   if (!_hasHydrated) return null;
 
-  if (!token || !user || user.role !== "employer") {
+  if (!token || !user || user.role !== "candidate") {
     return <ToastContainer />;
+  }
+
+  if (pathname.includes("/exam/")) {
+    return children;
   }
 
   return (

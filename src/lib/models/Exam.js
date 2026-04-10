@@ -25,6 +25,7 @@ const ExamSchema = new mongoose.Schema({
   endTime: { type: Date, required: true },
   duration: { type: Number, required: true, min: 1 }, // in minutes
   questions: [QuestionSchema],
+  negativeMark: { type: Number, default: 0, min: 0 },
   negativeMarking: { type: Boolean, default: false },
   status: {
     type: String,

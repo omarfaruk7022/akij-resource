@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongoose';
 import Exam from '@/lib/models/Exam';
+import Submission from '@/lib/models/Submission';
 import { getTokenFromRequest } from '@/lib/utils/authMiddleware';
 import { verifyToken } from '@/lib/utils/jwt';
 
@@ -25,10 +26,15 @@ export async function GET(request, { params }) {
     // Candidates can only see questions during active window
     if (user.role === 'candidate') {
       const now = new Date();
-      if (now < exam.startTime) {
+      const existingSubmission = await Submission.findOne({
+        exam: exam._id,
+        candidate: user.id,
+      }).select('_id status');
+
+      if (!existingSubmission && now < exam.startTime) {
         return NextResponse.json({ error: 'Exam has not started yet' }, { status: 403 });
       }
-      if (now > exam.endTime) {
+      if (!existingSubmission && now > exam.endTime) {
         return NextResponse.json({ error: 'Exam has ended' }, { status: 403 });
       }
     } else if (user.role === 'employer' && exam.createdBy._id.toString() !== user.id) {
@@ -59,7 +65,7 @@ export async function PUT(request, { params }) {
     }
 
     const body = await request.json();
-    const allowedFields = ['title', 'totalCandidates', 'totalSlots', 'questionSets', 'questionType', 'startTime', 'endTime', 'duration', 'questions', 'negativeMarking', 'status'];
+    const allowedFields = ['title', 'totalCandidates', 'totalSlots', 'questionSets', 'questionType', 'startTime', 'endTime', 'duration', 'questions', 'negativeMark', 'negativeMarking', 'status'];
     allowedFields.forEach((field) => {
       if (body[field] !== undefined) exam[field] = body[field];
     });

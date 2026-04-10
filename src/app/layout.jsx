@@ -3,9 +3,9 @@ import "./globals.css";
 import Providers from "@/components/shared/Providers";
 
 export const metadata = {
-  title: "AssessHub – Online Assessment Platform",
+  title: "AKij Resource",
   description:
-    "Professional online assessment platform for employers and candidates",
+    "AKij Resource online assessment platform for employers and candidates",
 };
 
 export default function RootLayout({ children }) {

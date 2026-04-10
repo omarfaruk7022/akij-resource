@@ -60,6 +60,12 @@ const useExamSessionStore = create((set, get) => ({
 
   setCurrentQuestion: (index) => set({ currentQuestion: index }),
 
+  setSubmittedResult: (submission) =>
+    set({
+      isSubmitted: true,
+      submissionResult: submission,
+    }),
+
   tickTimer: () =>
     set((state) => {
       const newTime = state.timeLeft - 1;

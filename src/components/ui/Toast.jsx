@@ -59,7 +59,7 @@ function ToastItem({ toast: t }) {
       <p className="flex-1 text-sm text-gray-700 font-medium">{t.message}</p>
       <button
         onClick={() => remove(t.id)}
-        className="flex-shrink-0 text-gray-400 hover:text-gray-600 mt-0.5"
+        className="flex-shrink-0 text-gray-400 hover:text-gray-600 mt-0.5 cursor-pointer"
       >
         <X className="w-4 h-4" />
       </button>

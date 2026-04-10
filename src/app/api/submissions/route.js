@@ -35,7 +35,11 @@ export async function POST(request) {
     const existing = await Submission.findOne({ exam: examId, candidate: user.id });
     if (existing) {
       if (existing.status === 'submitted') {
-        return NextResponse.json({ error: 'You have already submitted this exam' }, { status: 409 });
+        return NextResponse.json({
+          success: true,
+          submission: existing,
+          alreadySubmitted: true,
+        });
       }
       // Resume in-progress
       return NextResponse.json({ success: true, submission: existing, resumed: true });

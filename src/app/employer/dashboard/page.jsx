@@ -87,7 +87,7 @@ function ExamCard({ exam, onViewCandidates }) {
       <div>
         <button
           onClick={() => onViewCandidates(exam._id)}
-          className="px-4 py-1.5 rounded border border-[#6633FF] text-[#6633FF] text-xs font-medium hover:bg-[#6633FF] hover:text-white transition-colors duration-150"
+          className="px-4 py-1.5 rounded border border-[#6633FF] text-[#6633FF] text-xs font-medium cursor-pointer hover:bg-[#6633FF] hover:text-white transition-colors duration-150"
         >
           View Candidates
         </button>
@@ -163,7 +163,7 @@ export default function EmployerDashboard() {
           {/* Create Online Test button */}
           <button
             onClick={() => router.push("/employer/create-exam")}
-            className="h-9 px-5 bg-[#6633FF] text-white text-xs font-semibold rounded hover:bg-[#5522EE] transition-colors whitespace-nowrap flex-shrink-0 shadow-sm"
+            className="h-9 px-5 bg-[#6633FF] text-white text-xs font-semibold rounded cursor-pointer hover:bg-[#5522EE] transition-colors whitespace-nowrap flex-shrink-0 shadow-sm"
           >
             Create Online Test
           </button>
@@ -204,7 +204,7 @@ export default function EmployerDashboard() {
             </p>
             <button
               onClick={() => router.push("/employer/create-exam")}
-              className="px-5 py-2 bg-[#6633FF] text-white text-xs font-semibold rounded hover:bg-[#5522EE] transition-colors"
+              className="px-5 py-2 bg-[#6633FF] text-white text-xs font-semibold rounded cursor-pointer hover:bg-[#5522EE] transition-colors"
             >
               Create Online Test
             </button>
@@ -231,7 +231,7 @@ export default function EmployerDashboard() {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
+                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
               >
                 ‹
               </button>
@@ -239,7 +239,7 @@ export default function EmployerDashboard() {
                 <button
                   key={p}
                   onClick={() => setCurrentPage(p)}
-                  className={`w-7 h-7 flex items-center justify-center rounded border text-xs font-medium transition-colors ${
+                  className={`w-7 h-7 flex items-center justify-center rounded border text-xs font-medium cursor-pointer transition-colors ${
                     p === currentPage
                       ? "bg-[#6633FF] border-[#6633FF] text-white"
                       : "bg-white border-[#DADADA] text-gray-600 hover:border-[#6633FF] hover:text-[#6633FF]"
@@ -253,7 +253,7 @@ export default function EmployerDashboard() {
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage === totalPages || totalPages === 0}
-                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
+                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
               >
                 ›
               </button>

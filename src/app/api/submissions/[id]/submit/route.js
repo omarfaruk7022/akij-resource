@@ -9,10 +9,32 @@ import { verifyToken } from '@/lib/utils/jwt';
 function scoreSubmission(exam, answers) {
   let score = 0;
   let totalMarks = 0;
+  const examNegativeMark = Number(exam.negativeMark) || 0;
+
+  const normalizeCorrectAnswers = (question) => {
+    const options = question.options || [];
+    const correctAnswers = Array.isArray(question.correctAnswer)
+      ? question.correctAnswer
+      : question.correctAnswer
+      ? [question.correctAnswer]
+      : [];
+
+    return correctAnswers.map((answer) => {
+      const index = Number(answer);
+      if (
+        Number.isInteger(index) &&
+        index >= 0 &&
+        index < options.length
+      ) {
+        return options[index];
+      }
+      return answer;
+    });
+  };
 
   for (const question of exam.questions) {
     const qMarks = question.marks || 1;
-    const qNeg = question.negativeMark || 0;
+    const qNeg = Number(question.negativeMark ?? examNegativeMark) || 0;
     totalMarks += qMarks;
 
     const answerEntry = answers.find((a) => a.questionId?.toString() === question._id?.toString());
@@ -24,7 +46,8 @@ function scoreSubmission(exam, answers) {
     }
 
     if (question.type === 'radio') {
-      if (answerEntry.answer === question.correctAnswer) {
+      const [correct] = normalizeCorrectAnswers(question);
+      if (answerEntry.answer === correct) {
         score += qMarks;
       } else if (exam.negativeMarking) {
         score -= qNeg;
@@ -32,7 +55,7 @@ function scoreSubmission(exam, answers) {
     }
 
     if (question.type === 'checkbox') {
-      const correct = Array.isArray(question.correctAnswer) ? [...question.correctAnswer].sort() : [];
+      const correct = normalizeCorrectAnswers(question).sort();
       const given = Array.isArray(answerEntry.answer) ? [...answerEntry.answer].sort() : [];
       const isCorrect = JSON.stringify(correct) === JSON.stringify(given);
       if (isCorrect) {

@@ -1,36 +1,48 @@
-'use client';
+"use client";
 // src/components/ui/Modal.jsx
-import { useEffect } from 'react';
-import { X } from 'lucide-react';
-import { cn } from '@/lib/utils/helpers';
+import { useEffect } from "react";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils/helpers";
 
-export default function Modal({ isOpen, onClose, title, children, size = 'md', className = '' }) {
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  size = "xl",
+  className = "",
+}) {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   useEffect(() => {
-    const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
-    if (isOpen) window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    const handleKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    if (isOpen) window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
+    sm: "max-w-md",
+    md: "max-w-lg",
+    lg: "max-w-6xl",
+    xl: "max-w-7xl",
+    full: "max-w-none",
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -39,11 +51,10 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', c
       {/* Modal */}
       <div
         className={cn(
-          'relative bg-white rounded-2xl shadow-2xl w-full flex flex-col max-h-[90vh]',
+          "relative bg-white rounded-2xl shadow-2xl w-[95vw] flex flex-col max-h-[90vh]",
           sizeClasses[size],
           className
         )}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {title && (
@@ -51,7 +62,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', c
             <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

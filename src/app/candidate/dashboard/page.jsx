@@ -1,112 +1,27 @@
-'use client';
+"use client";
 // src/app/candidate/dashboard/page.jsx
-import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { Clock, BookOpen, AlertTriangle, Play, Calendar, CheckCircle } from 'lucide-react';
-import Topbar from '@/components/shared/Topbar';
-import Badge from '@/components/ui/Badge';
-import Button from '@/components/ui/Button';
-import { formatDate, formatDuration } from '@/lib/utils/helpers';
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { BookOpen } from "lucide-react";
+import CandidateExamCard from "@/components/candidate/CandidateExamCard";
 
 async function fetchAvailableExams() {
-  const res = await axios.get('/api/exams', { withCredentials: true });
+  const res = await axios.get("/api/exams", { withCredentials: true });
   return res.data.exams;
 }
 
-function ExamCard({ exam, onStart }) {
-  const now = new Date();
-  const start = new Date(exam.startTime);
-  const end = new Date(exam.endTime);
-  const isActive = now >= start && now <= end;
-  const isUpcoming = now < start;
-  const isEnded = now > end;
-
-  return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
-      {/* Header stripe */}
-      <div className={`h-1.5 ${isActive ? 'bg-emerald-500' : isUpcoming ? 'bg-blue-500' : 'bg-gray-300'}`} />
-
-      <div className="p-5">
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <h3 className="font-semibold text-gray-900 text-base leading-snug">{exam.title}</h3>
-          {isActive && <Badge variant="success" dot>Live</Badge>}
-          {isUpcoming && <Badge variant="info" dot>Upcoming</Badge>}
-          {isEnded && <Badge variant="gray" dot>Ended</Badge>}
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 mb-5">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center">
-              <Clock className="w-3.5 h-3.5 text-amber-500" />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800">{formatDuration(exam.duration)}</p>
-              <p className="text-xs text-gray-400">Duration</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <div className="w-7 h-7 bg-indigo-50 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800">{exam.questionSets}</p>
-              <p className="text-xs text-gray-400">Question Sets</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <div className="w-7 h-7 bg-red-50 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800">{exam.negativeMarking ? 'Yes' : 'No'}</p>
-              <p className="text-xs text-gray-400">Negative Marks</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <div className="w-7 h-7 bg-purple-50 rounded-lg flex items-center justify-center">
-              <Calendar className="w-3.5 h-3.5 text-purple-500" />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800 text-xs leading-tight">{formatDate(exam.startTime).split(',')[0]}</p>
-              <p className="text-xs text-gray-400">Start Date</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-50 pt-4">
-          {isActive ? (
-            <Button
-              fullWidth
-              size="md"
-              icon={<Play className="w-4 h-4" />}
-              onClick={() => onStart(exam._id)}
-            >
-              Start Exam
-            </Button>
-          ) : isUpcoming ? (
-            <div className="text-center text-sm text-gray-500 py-1">
-              Starts {formatDate(exam.startTime)}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-400 py-1">
-              <CheckCircle className="w-4 h-4" /> Exam Ended
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
+const ITEMS_PER_PAGE_OPTIONS = [5, 8, 10, 20];
 
 export default function CandidateDashboard() {
   const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(8);
 
   const { data: exams = [], isLoading } = useQuery({
-    queryKey: ['candidate-exams'],
+    queryKey: ["candidate-exams"],
     queryFn: fetchAvailableExams,
     refetchInterval: 30000, // refresh every 30s to catch newly started exams
   });
@@ -115,69 +30,158 @@ export default function CandidateDashboard() {
     router.push(`/candidate/exam/${examId}`);
   };
 
-  const active = exams.filter((e) => e.computedStatus === 'active');
-  const upcoming = exams.filter((e) => e.computedStatus === 'upcoming');
-  const ended = exams.filter((e) => e.computedStatus === 'ended');
+  const filteredExams = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return exams;
+    return exams.filter((exam) => exam.title?.toLowerCase().includes(query));
+  }, [exams, search]);
+
+  const totalPages = Math.ceil(filteredExams.length / perPage);
+  const paginatedExams = filteredExams.slice(
+    (currentPage - 1) * perPage,
+    currentPage * perPage
+  );
 
   return (
-    <div className="p-6 space-y-6">
-      <Topbar title="My Exams" subtitle="View and take your assigned assessments" />
+    <div className="min-h-full flex flex-col max-w-9/10 mx-auto">
+      <div className="flex-1 px-6 md:px-8 py-6">
+        <div className="flex items-center justify-between mb-5 gap-4 flex-wrap">
+          <h2 className="text-[#1A1A1A] text-base font-bold">Online Tests</h2>
 
-      <div className="pt-4">
+          <div className="flex items-center gap-3 flex-1 max-w-sm ml-4">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Search exam title..."
+                className="w-full h-9 pl-3 pr-9 text-xs border border-[#DADADA] rounded bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#6633FF] transition-colors"
+              />
+              <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center bg-[#6633FF] rounded-r cursor-pointer hover:bg-[#5522EE] transition-colors">
+                <svg
+                  className="w-4 h-4 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 h-72 animate-pulse" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg border border-[#E8E8E8] h-36 animate-pulse"
+              />
             ))}
           </div>
-        ) : exams.length === 0 ? (
+        ) : filteredExams.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mb-4">
-              <BookOpen className="w-8 h-8 text-indigo-400" />
+            <div className="w-14 h-14 bg-[#F0EBFF] rounded-xl flex items-center justify-center mb-4">
+              <BookOpen className="w-7 h-7 text-[#6633FF]" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">No exams available</h3>
-            <p className="text-gray-500 text-sm">Check back later for assigned assessments.</p>
+            <h3 className="text-sm font-semibold text-gray-800 mb-1">
+              No Online Tests Yet
+            </h3>
+            <p className="text-xs text-gray-500 mb-5">
+              Check back later for assigned assessments.
+            </p>
           </div>
         ) : (
-          <div className="space-y-8">
-            {active.length > 0 && (
-              <section>
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                  Live Now ({active.length})
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {active.map((exam) => (
-                    <ExamCard key={exam._id} exam={exam} onStart={handleStart} />
-                  ))}
-                </div>
-              </section>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {paginatedExams.map((exam) => (
+              <CandidateExamCard
+                key={exam._id}
+                exam={exam}
+                onStart={handleStart}
+              />
+            ))}
+          </div>
+        )}
 
-            {upcoming.length > 0 && (
-              <section>
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                  Upcoming ({upcoming.length})
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {upcoming.map((exam) => (
-                    <ExamCard key={exam._id} exam={exam} onStart={handleStart} />
-                  ))}
-                </div>
-              </section>
-            )}
+        {filteredExams.length > 0 && (
+          <div className="flex items-center justify-between mt-6 flex-wrap gap-3">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
+              >
+                ‹
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setCurrentPage(p)}
+                  className={`w-7 h-7 flex items-center justify-center rounded border text-xs font-medium cursor-pointer transition-colors ${
+                    p === currentPage
+                      ? "bg-[#6633FF] border-[#6633FF] text-white"
+                      : "bg-white border-[#DADADA] text-gray-600 hover:border-[#6633FF] hover:text-[#6633FF]"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
+              >
+                ›
+              </button>
+            </div>
 
-            {ended.length > 0 && (
-              <section>
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
-                  Past Exams ({ended.length})
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {ended.map((exam) => (
-                    <ExamCard key={exam._id} exam={exam} onStart={handleStart} />
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-[#888]">
+                Online Test Per Page
+              </span>
+              <div className="relative">
+                <select
+                  value={perPage}
+                  onChange={(event) => {
+                    setPerPage(Number(event.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="h-7 pl-2 pr-6 text-xs border border-[#DADADA] rounded bg-white text-gray-700 focus:outline-none focus:border-[#6633FF] appearance-none cursor-pointer"
+                >
+                  {ITEMS_PER_PAGE_OPTIONS.map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
                   ))}
+                </select>
+                <div className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2">
+                  <svg
+                    className="w-3 h-3 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
-              </section>
-            )}
+              </div>
+            </div>
           </div>
         )}
       </div>

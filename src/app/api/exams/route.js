@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongoose';
 import Exam from '@/lib/models/Exam';
+import Submission from '@/lib/models/Submission';
 import { getTokenFromRequest } from '@/lib/utils/authMiddleware';
 import { verifyToken } from '@/lib/utils/jwt';
 
@@ -29,24 +30,56 @@ export async function GET(request) {
         .select('-questions')
         .sort({ createdAt: -1 });
     } else {
-      // Candidates see published/active exams
-      const now = new Date();
+      // Candidates see published exams. The exam start API still enforces the active window.
       exams = await Exam.find({
-        startTime: { $lte: now },
-        endTime: { $gte: now },
-        status: { $ne: 'draft' },
+        status: 'published',
       })
-        .select('-questions')
         .sort({ startTime: 1 });
+    }
+
+    let submissionMap = new Map();
+    if (user.role === 'candidate' && exams.length > 0) {
+      const submissions = await Submission.find({
+        candidate: user.id,
+        exam: { $in: exams.map((exam) => exam._id) },
+      }).select('exam status autoSubmitted submittedAt');
+
+      submissionMap = new Map(
+        submissions.map((submission) => [submission.exam.toString(), submission])
+      );
     }
 
     // Add computed status
     const examsWithStatus = exams.map((exam) => {
       const obj = exam.toObject();
       const now = new Date();
+      const normalizedNegativeMark =
+        typeof obj.negativeMark === 'number'
+          ? obj.negativeMark
+          : typeof obj.negativeMark === 'string' && obj.negativeMark.trim() !== ''
+          ? Number(obj.negativeMark) || 0
+          : Array.isArray(obj.questions) && obj.questions.length > 0
+          ? Number(obj.questions[0]?.negativeMark) || 0
+          : 0;
+
       if (now > exam.endTime) obj.computedStatus = 'ended';
       else if (now >= exam.startTime) obj.computedStatus = 'active';
       else obj.computedStatus = 'upcoming';
+      obj.negativeMark = normalizedNegativeMark;
+      obj.negativeMarking = normalizedNegativeMark > 0;
+
+      if (user.role === 'candidate') {
+        const submission = submissionMap.get(exam._id.toString());
+        obj.hasCompleted = submission?.status === 'submitted';
+        obj.submissionStatus = submission?.status || null;
+        obj.autoSubmitted = submission?.autoSubmitted || false;
+        obj.submittedAt = submission?.submittedAt || null;
+      }
+
+      if (Array.isArray(obj.questions)) {
+        obj.questionCount = obj.questions.length;
+        delete obj.questions;
+      }
       return obj;
     });
 
@@ -65,7 +98,7 @@ export async function POST(request) {
 
     await connectDB();
     const body = await request.json();
-    const { title, totalCandidates, totalSlots, questionSets, questionType, startTime, endTime, duration, questions, negativeMarking } = body;
+    const { title, totalCandidates, totalSlots, questionSets, questionType, startTime, endTime, duration, questions, negativeMark, negativeMarking } = body;
 
     if (!title || !totalCandidates || !totalSlots || !startTime || !endTime || !duration) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -73,6 +106,8 @@ export async function POST(request) {
     if (new Date(endTime) <= new Date(startTime)) {
       return NextResponse.json({ error: 'End time must be after start time' }, { status: 400 });
     }
+
+    const normalizedNegativeMark = Math.max(0, Number(negativeMark) || 0);
 
     const exam = await Exam.create({
       title,
@@ -84,7 +119,8 @@ export async function POST(request) {
       endTime: new Date(endTime),
       duration,
       questions: questions || [],
-      negativeMarking: negativeMarking || false,
+      negativeMark: normalizedNegativeMark,
+      negativeMarking: normalizedNegativeMark > 0 || negativeMarking || false,
       createdBy: user.id,
       status: 'draft',
     });

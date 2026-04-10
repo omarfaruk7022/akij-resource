@@ -11,6 +11,7 @@ const defaultStep1 = {
   startTime: '',
   endTime: '',
   duration: '',
+  negativeMark: 0,
   negativeMarking: false,
 };
 

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ChevronDown, Trash2, Plus } from "lucide-react";
 import Modal from "@/components/ui/Modal";
+import RichEditor from "../shared/RichEditor";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
@@ -12,128 +13,41 @@ const TYPE_OPTIONS = [
   { value: "text", label: "Text" },
 ];
 
-function RichEditor({ contentRef, placeholder = "", onChange }) {
-  const handleInput = () => {
-    if (onChange) onChange(contentRef.current?.innerHTML || "");
-  };
-  const exec = (cmd) => {
-    document.execCommand(cmd, false, null);
-    contentRef.current?.focus();
-  };
+function getCorrectAnswerIndexes(correctAnswer, optionTexts) {
+  const answers = Array.isArray(correctAnswer)
+    ? correctAnswer
+    : correctAnswer
+      ? [correctAnswer]
+      : [];
 
-  return (
-    <div className="border border-[#E5E7EB] rounded overflow-hidden mt-2">
-      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-[#E5E7EB] bg-[#FAFAFA] flex-wrap">
-        <button
-          type="button"
-          onClick={() => exec("undo")}
-          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors"
-        >
-          <svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <path d="M3 7v6h6" />
-            <path d="M3 13A9 9 0 1 0 5.27 5.27" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={() => exec("redo")}
-          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors"
-        >
-          <svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <path d="M21 7v6h-6" />
-            <path d="M21 13A9 9 0 1 1 18.73 5.27" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors whitespace-nowrap"
-        >
-          Normal text
-          <svg
-            width="9"
-            height="9"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-        <div className="w-px h-3.5 bg-[#E5E7EB] mx-0.5" />
-        <button
-          type="button"
-          onClick={() => exec("insertUnorderedList")}
-          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors"
-        >
-          <svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-          </svg>
-          <svg
-            width="9"
-            height="9"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-        <div className="w-px h-3.5 bg-[#E5E7EB] mx-0.5" />
-        <button
-          type="button"
-          onClick={() => exec("bold")}
-          className="px-1.5 py-0.5 rounded text-[13px] font-black text-[#333] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors"
-        >
-          B
-        </button>
-        <button
-          type="button"
-          onClick={() => exec("italic")}
-          className="px-1.5 py-0.5 rounded text-[13px] italic font-semibold text-[#333] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors"
-        >
-          I
-        </button>
-      </div>
-      <div
-        ref={contentRef}
-        onInput={handleInput}
-        contentEditable
-        suppressContentEditableWarning
-        data-placeholder={placeholder}
-        className="min-h-[4.5rem] px-3 py-2.5 text-[13px] text-[#1A1A1A] outline-none bg-white empty:before:content-[attr(data-placeholder)] empty:before:text-[#BABABA]"
-      />
-    </div>
-  );
+  return answers
+    .map((answer) => {
+      const textIndex = optionTexts.findIndex((option) => option === answer);
+      if (textIndex >= 0) return textIndex;
+
+      const numericIndex = Number(answer);
+      return Number.isInteger(numericIndex) &&
+        numericIndex >= 0 &&
+        numericIndex < optionTexts.length
+        ? numericIndex
+        : -1;
+    })
+    .filter((idx) => idx >= 0)
+    .map(String);
+}
+
+function textFromHtml(value) {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = value || "";
+  return tmp.innerText?.trim() || "";
 }
 
 function OptionRow({
   letter,
-  type,
+  value,
   isCorrect,
   onToggleCorrect,
+  onChange,
   onDelete,
   showDelete,
 }) {
@@ -144,7 +58,7 @@ function OptionRow({
         <button
           type="button"
           onClick={onToggleCorrect}
-          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
+          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer ${
             isCorrect
               ? "bg-[#6633FF] text-white"
               : "bg-gray-200 text-gray-600 hover:bg-[#6633FF] hover:text-white"
@@ -154,25 +68,47 @@ function OptionRow({
         </button>
         <div className="flex-1" />
         {showDelete && (
-          <button onClick={onDelete} className="text-[#bbb] hover:text-red-500">
+          <button
+            type="button"
+            onClick={onDelete}
+            className="text-[#bbb] hover:text-red-500 cursor-pointer"
+          >
             <Trash2 size={12} />
           </button>
         )}
       </div>
-      <div className="border border-t-0 border-[#E5E7EB] rounded-b">
-        <RichEditor contentRef={editorRef} placeholder="Type option..." />
+      <div className="border border-t-0 border-gray-200 rounded-b">
+        <RichEditor
+          contentRef={editorRef}
+          placeholder="Type option..."
+          value={value}
+          onChange={onChange}
+        />
       </div>
     </div>
   );
 }
 
-export default function QuestionModal({ isOpen, onClose, onSave }) {
+function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
+  const initialType = initialData?.type || "checkbox";
+  const initialOptions =
+    initialType === "text"
+      ? []
+      : initialData?.options?.length
+        ? initialData.options
+        : ["", ""];
   const [questionNum, setQuestionNum] = useState(1);
-  const [score, setScore] = useState(1);
-  const [type, setType] = useState("checkbox");
-  const [options, setOptions] = useState([0, 1]);
-  const [correctAnswers, setCorrectAnswers] = useState([]);
-  const [textAnswer, setTextAnswer] = useState("");
+  const [score, setScore] = useState(initialData?.marks || 1);
+  const [type, setType] = useState(initialType);
+  const [options, setOptions] = useState(initialOptions);
+  const [correctAnswers, setCorrectAnswers] = useState(() =>
+    initialType === "text"
+      ? []
+      : getCorrectAnswerIndexes(initialData?.correctAnswer, initialOptions)
+  );
+  const [textAnswer, setTextAnswer] = useState(
+    initialData?.type === "text" ? initialData.correctAnswer || "" : ""
+  );
 
   const questionEditorRef = useRef(null);
   const textAnswerRef = useRef(null); // ← fix: dedicated ref for text answer
@@ -189,12 +125,22 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
   };
 
   const addOption = () => {
-    if (options.length < 8) setOptions((p) => [...p, p.length]);
+    if (options.length < 8) setOptions((p) => [...p, ""]);
   };
 
   const removeOption = (idx) => {
     setOptions((p) => p.filter((_, i) => i !== idx));
-    setCorrectAnswers((p) => p.filter((v) => v !== String(idx)));
+    setCorrectAnswers((p) =>
+      p
+        .map(Number)
+        .filter((value) => value !== idx)
+        .map((value) => (value > idx ? value - 1 : value))
+        .map(String)
+    );
+  };
+
+  const updateOption = (idx, value) => {
+    setOptions((p) => p.map((option, i) => (i === idx ? value : option)));
   };
 
   const handleTypeChange = (val) => {
@@ -202,7 +148,7 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
     setCorrectAnswers([]);
     setTextAnswer("");
     if (val === "text") setOptions([]);
-    else if (options.length < 2) setOptions([0, 1]);
+    else if (options.length < 2) setOptions(["", ""]);
   };
 
   const handleSave = (addMore) => {
@@ -213,13 +159,27 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
 
     if (type === "text") {
       // Strip HTML tags from innerHTML to get plain text answer
-      const tmp = document.createElement("div");
-      tmp.innerHTML = textAnswer;
-      data.correctAnswer = tmp.innerText?.trim() || "";
+      data.correctAnswer = textFromHtml(textAnswer);
+      if (!data.correctAnswer) {
+        alert("Correct answer is required.");
+        return;
+      }
       data.options = [];
     } else {
-      data.options = options.map((_, i) => `Option ${LETTERS[i]}`);
-      data.correctAnswer = correctAnswers;
+      if (correctAnswers.length === 0) {
+        alert("Correct answer is required.");
+        return;
+      }
+      const optionTexts = options.map(textFromHtml);
+      if (optionTexts.some((option) => !option)) {
+        alert("All options are required.");
+        return;
+      }
+      data.options = optionTexts;
+      data.correctAnswer =
+        type === "radio"
+          ? optionTexts[Number(correctAnswers[0])]
+          : correctAnswers.map((idx) => optionTexts[Number(idx)]);
     }
 
     onSave(data);
@@ -230,9 +190,9 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
     setQuestionNum((n) => n + 1);
     setScore(1);
     setType("checkbox");
-    setOptions([0, 1]);
-    setCorrectAnswers([]); // ← fix: array not string
-    setTextAnswer(""); // ← fix: reset text answer
+    setOptions(["", ""]);
+    setCorrectAnswers([]);
+    setTextAnswer("");
     if (questionEditorRef.current) questionEditorRef.current.innerHTML = "";
     if (textAnswerRef.current) textAnswerRef.current.innerHTML = ""; // ← fix: clear editor
   };
@@ -240,7 +200,7 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       {/* Header */}
-      <div className="flex items-center gap-2 pb-3 border-b mb-4">
+      <div className="flex items-center gap-2 pb-3 border-b border-gray-200 mb-4">
         <div className="w-6 h-6 rounded-full bg-[#6633FF] text-white flex items-center justify-center text-xs font-bold">
           {questionNum}
         </div>
@@ -252,13 +212,13 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
           type="number"
           value={score}
           onChange={(e) => setScore(Number(e.target.value))}
-          className="w-10 border rounded text-center text-sm"
+          className="w-10 border border-gray-200 rounded text-center text-sm"
         />
         <div className="relative">
           <select
             value={type}
             onChange={(e) => handleTypeChange(e.target.value)}
-            className="border rounded text-xs px-2 py-1 appearance-none"
+            className="border border-gray-200 rounded text-xs px-2 py-1 appearance-none"
           >
             {TYPE_OPTIONS.map((t) => (
               <option key={t.value} value={t.value}>
@@ -271,7 +231,7 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
             className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500"
           />
         </div>
-        <button onClick={onClose}>
+        <button type="button" onClick={onClose} className="cursor-pointer">
           <Trash2 size={14} />
         </button>
       </div>
@@ -280,6 +240,7 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
       <RichEditor
         contentRef={questionEditorRef}
         placeholder="Type your question..."
+        value={initialData?.title || ""}
       />
 
       {/* MCQ options */}
@@ -289,16 +250,18 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
             <OptionRow
               key={idx}
               letter={LETTERS[idx]}
-              type={type}
+              value={options[idx]}
               isCorrect={correctAnswers.includes(String(idx))}
               onToggleCorrect={() => toggleCorrect(idx)}
+              onChange={(value) => updateOption(idx, value)}
               onDelete={() => removeOption(idx)}
               showDelete={options.length > 2}
             />
           ))}
           <button
+            type="button"
             onClick={addOption}
-            className="flex items-center gap-1 mt-3 text-sm text-[#6633FF]"
+            className="flex items-center gap-1 mt-3 text-sm text-[#6633FF] cursor-pointer"
           >
             <Plus size={14} /> Another option
           </button>
@@ -308,14 +271,15 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
       {/* Text answer */}
       {type === "text" && (
         <div className="mt-3">
-          <div className="flex items-center px-2.5 py-1.5 border border-[#E5E7EB] rounded-t bg-[#FAFAFA]">
+          <div className="flex items-center px-2.5 py-1.5 border border-gray-200 rounded-t bg-[#FAFAFA]">
             <div className="w-5 h-5 rounded-full bg-[#6633FF] text-white flex items-center justify-center text-[10px]">
               A
             </div>
           </div>
-          <div className="border border-t-0 border-[#E5E7EB] rounded-b">
+          <div className="border border-t-0 border-gray-200 rounded-b">
             <RichEditor
               contentRef={textAnswerRef}
+              value={textAnswer}
               onChange={setTextAnswer}
               placeholder="Type answer..."
             />
@@ -324,20 +288,28 @@ export default function QuestionModal({ isOpen, onClose, onSave }) {
       )}
 
       {/* Footer */}
-      <div className="flex justify-end gap-3 mt-5 pt-4 border-t">
+      <div className="flex justify-end gap-3 mt-5 pt-4 border-t border-gray-200">
         <button
+          type="button"
           onClick={() => handleSave(false)}
-          className="px-5 py-2 border rounded text-sm"
+          className="px-5 py-2 border border-gray-200 rounded text-sm cursor-pointer"
         >
           Save
         </button>
         <button
+          type="button"
           onClick={() => handleSave(true)}
-          className="px-5 py-2 bg-[#6633FF] text-white rounded text-sm"
+          className="px-5 py-2 bg-[#6633FF] text-white rounded text-sm cursor-pointer"
         >
           Save & Add More
         </button>
       </div>
     </Modal>
   );
+}
+
+export default function QuestionModal(props) {
+  const modalKey = props.isOpen ? props.initialData?._id || "new" : "closed";
+
+  return <QuestionModalContent key={modalKey} {...props} />;
 }

@@ -49,8 +49,8 @@ async function seed() {
   }
 
   console.log("\n Seeding complete!");
-  console.log("   Employer login:  http://localhost:3000/employer/login");
-  console.log("   Candidate login: http://localhost:3000/candidate/login");
+  console.log("   Employer login:  http://localhost:3000/login");
+  console.log("   Candidate login: http://localhost:3000/login");
   await mongoose.disconnect();
   process.exit(0);
 }

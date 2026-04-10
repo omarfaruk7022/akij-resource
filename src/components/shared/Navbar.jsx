@@ -59,7 +59,7 @@ export default function Navbar({ activePage = "Dashboard" }) {
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="flex items-center gap-2.5 group"
+          className="flex items-center gap-2.5 group cursor-pointer"
         >
           {/* Avatar */}
           <div className="w-8 h-8 rounded-full bg-[#E05A3A] flex items-center justify-center flex-shrink-0 shadow">
@@ -92,7 +92,7 @@ export default function Navbar({ activePage = "Dashboard" }) {
             </div>
             <button
               onClick={handleLogout}
-              className="w-full text-left px-4 py-2.5 text-xs text-red-500 hover:bg-red-50 transition-colors font-medium"
+              className="w-full text-left px-4 py-2.5 text-xs text-red-500 hover:bg-red-50 cursor-pointer transition-colors font-medium"
             >
               Sign Out
             </button>

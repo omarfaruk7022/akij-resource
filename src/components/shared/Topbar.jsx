@@ -13,7 +13,7 @@ export default function Topbar({ title, subtitle }) {
         {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
       </div>
       <div className="flex items-center gap-3">
-        <button className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
+        <button className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 cursor-pointer transition-colors">
           <Bell className="w-5 h-5" />
         </button>
         <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center shadow-sm">
