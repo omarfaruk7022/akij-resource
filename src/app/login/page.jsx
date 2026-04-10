@@ -32,6 +32,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
 
@@ -58,7 +59,7 @@ export default function LoginPage() {
         {/* Navbar */}
 
         {/* Main */}
-        <main className="flex-1 flex items-center justify-center px-4 py-10">
+        <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
           <div className="bg-white rounded-md w-full max-w-[460px] px-10 py-10 shadow-md">
             {/* Lock icon + heading */}
             <div className="flex flex-col items-center mb-7">
@@ -190,6 +191,40 @@ export default function LoginPage() {
               </button>
             </form>
           </div>
+          <div className="w-full max-w-[460px] mt-4 bg-[#F8F8FF] border border-[#E5E1FF] rounded-md p-4 text-xs text-gray-700">
+            <p className="font-semibold text-[#6633FF] mb-2">
+              Demo Credentials
+            </p>
+
+            <div className="space-y-2">
+              <button
+                className="flex justify-between cursor-pointer w-full"
+                onClick={() => {
+                  setValue("email", "employer@demo.com");
+                  setValue("password", "demo123");
+                }}
+              >
+                <span className="text-gray-500">Employer</span>
+                <span className="font-medium">employer@demo.com</span>
+              </button>
+
+              <button
+                className="flex justify-between cursor-pointer w-full"
+                onClick={() => {
+                  setValue("email", "candidate@demo.com");
+                  setValue("password", "demo123");
+                }}
+              >
+                <span className="text-gray-500">Candidate</span>
+                <span className="font-medium">candidate@demo.com</span>
+              </button>
+
+              <div className="flex justify-between border-t border-gray-300 pt-2 mt-2">
+                <span className="text-gray-500">Password</span>
+                <span className="font-medium">demo123</span>
+              </div>
+            </div>
+          </div>
         </main>
 
         {/* Footer */}
@@ -198,4 +233,3 @@ export default function LoginPage() {
     </>
   );
 }
- 
