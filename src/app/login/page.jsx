@@ -8,6 +8,8 @@ import { Eye, EyeOff, Phone, Mail } from "lucide-react";
 import useAuthStore from "@/store/useAuthStore";
 import { toast } from "@/components/ui/Toast";
 import ToastContainer from "@/components/ui/Toast";
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
 
 const schema = z.object({
   email: z.string().min(1, "Email / User ID is required"),
@@ -26,7 +28,7 @@ export default function LoginPage() {
       else router.replace("/candidate/dashboard");
     }
   }, [_hasHydrated, token, user, router]);
-  
+
   const {
     register,
     handleSubmit,
@@ -46,11 +48,12 @@ export default function LoginPage() {
   return (
     <>
       <ToastContainer />
+      <Navbar />
       <div className="min-h-screen flex flex-col bg-[#EBEBEB]">
         {/* Browser tab bar */}
-        <div className="bg-[#D6D6D6] border-b border-[#C4C4C4] px-4 py-1.5">
+        {/* <div className="bg-[#D6D6D6] border-b border-[#C4C4C4] px-4 py-1.5">
           <span className="text-xs text-[#555555]">Login</span>
-        </div>
+        </div> */}
 
         {/* Navbar */}
 
@@ -191,6 +194,8 @@ export default function LoginPage() {
 
         {/* Footer */}
       </div>
+      <Footer />
     </>
   );
 }
+ 
