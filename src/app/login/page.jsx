@@ -55,7 +55,7 @@ export default function LoginPage() {
           <div className="bg-white rounded-md w-full max-w-[460px] px-10 py-10 shadow-md">
             {/* Lock icon + heading */}
             <div className="flex flex-col items-center mb-7">
-              <div className="w-14 h-14 rounded-full bg-[#EDE7FF] flex items-center justify-center mb-3">
+              {/* <div className="w-14 h-14 rounded-full bg-[#EDE7FF] flex items-center justify-center mb-3">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
                   <rect
                     x="5"
@@ -74,11 +74,11 @@ export default function LoginPage() {
                   />
                   <circle cx="12" cy="16" r="1.5" fill="white" />
                 </svg>
-              </div>
+              </div> */}
               <h1 className="text-xl font-bold text-gray-900 tracking-wide">
                 Sign In
               </h1>
-              <div className="w-10 h-[3px] bg-primary rounded-full mt-2" />
+              {/* <div className="w-10 h-[3px] bg-primary rounded-full mt-2" /> */}
             </div>
 
             <form
