@@ -11,7 +11,6 @@ export default function Topbar({ title, subtitle }) {
         <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
         {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
       </div>
-     
     </header>
   );
 }
