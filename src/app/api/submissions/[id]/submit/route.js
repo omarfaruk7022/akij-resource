@@ -1,3 +1,4 @@
+// src/app/api/submissions/[id]/submit/route.js
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongoose';
 import Exam from '@/lib/models/Exam';
@@ -7,7 +8,8 @@ import { verifyToken } from '@/lib/utils/jwt';
 
 function scoreSubmission(exam, answers) {
   let score = 0;
-  let totalMarks = 0;
+  let totalMarks = 0;       // auto-gradable only (radio + checkbox)
+  let textMarks = 0;        // text questions — excluded from auto score
   const examNegativeMark = Number(exam.negativeMark) || 0;
 
   const normalizeCorrectAnswers = (question) => {
@@ -20,11 +22,7 @@ function scoreSubmission(exam, answers) {
 
     return correctAnswers.map((answer) => {
       const index = Number(answer);
-      if (
-        Number.isInteger(index) &&
-        index >= 0 &&
-        index < options.length
-      ) {
+      if (Number.isInteger(index) && index >= 0 && index < options.length) {
         return options[index];
       }
       return answer;
@@ -34,12 +32,28 @@ function scoreSubmission(exam, answers) {
   for (const question of exam.questions) {
     const qMarks = question.marks || 1;
     const qNeg = Number(question.negativeMark ?? examNegativeMark) || 0;
+
+    // Text questions — cannot be auto-graded, track separately
+    if (question.type === 'text') {
+      textMarks += qMarks;
+      continue;
+    }
+
+    // Only radio + checkbox count toward auto-graded total
     totalMarks += qMarks;
 
-    const answerEntry = answers.find((a) => a.questionId?.toString() === question._id?.toString());
-    if (!answerEntry || answerEntry.answer === undefined || answerEntry.answer === null || answerEntry.answer === '') continue;
+    const answerEntry = answers.find(
+      (a) => a.questionId?.toString() === question._id?.toString()
+    );
 
-    if (question.type === 'text') {
+    // No answer or empty answer — skip
+    if (
+      !answerEntry ||
+      answerEntry.answer === undefined ||
+      answerEntry.answer === null ||
+      answerEntry.answer === '' ||
+      (Array.isArray(answerEntry.answer) && answerEntry.answer.length === 0)
+    ) {
       continue;
     }
 
@@ -54,7 +68,9 @@ function scoreSubmission(exam, answers) {
 
     if (question.type === 'checkbox') {
       const correct = normalizeCorrectAnswers(question).sort();
-      const given = Array.isArray(answerEntry.answer) ? [...answerEntry.answer].sort() : [];
+      const given = Array.isArray(answerEntry.answer)
+        ? [...answerEntry.answer].sort()
+        : [];
       const isCorrect = JSON.stringify(correct) === JSON.stringify(given);
       if (isCorrect) {
         score += qMarks;
@@ -64,7 +80,11 @@ function scoreSubmission(exam, answers) {
     }
   }
 
-  return { score: Math.max(0, score), totalMarks };
+  return {
+    score: Math.max(0, score),
+    totalMarks,   // auto-graded marks only
+    textMarks,    // pending manual review
+  };
 }
 
 // POST /api/submissions/[id]/submit
@@ -72,6 +92,7 @@ export async function POST(request, { params }) {
   try {
     const token = getTokenFromRequest(request);
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const user = verifyToken(token);
     if (!user || user.role !== 'candidate') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -95,29 +116,36 @@ export async function POST(request, { params }) {
     if (!exam) return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
 
     const finalAnswers = answers || submission.answers;
-    const { score, totalMarks } = scoreSubmission(exam, finalAnswers);
-    const percentage = totalMarks > 0 ? Math.round((score / totalMarks) * 100) : 0;
+    const { score, totalMarks, textMarks } = scoreSubmission(exam, finalAnswers);
 
-    submission.answers = finalAnswers;
-    submission.status = 'submitted';
-    submission.submittedAt = new Date();
+    // percentage based only on auto-gradable marks
+    // null when exam is text-only (no auto-gradable questions)
+    const percentage = totalMarks > 0
+      ? Math.round((score / totalMarks) * 100)
+      : null;
+
+    submission.answers       = finalAnswers;
+    submission.status        = 'submitted';
+    submission.submittedAt   = new Date();
     submission.autoSubmitted = autoSubmitted || false;
-    submission.timeSpent = timeSpent || 0;
-    submission.score = score;
-    submission.totalMarks = totalMarks;
-    submission.percentage = percentage;
+    submission.timeSpent     = timeSpent || 0;
+    submission.score         = score;
+    submission.totalMarks    = totalMarks;
+    submission.percentage    = percentage;
 
     await submission.save();
 
     return NextResponse.json({
       success: true,
       submission: {
-        _id: submission._id,
+        _id:            submission._id,
         score,
         totalMarks,
+        textMarks,
         percentage,
-        submittedAt: submission.submittedAt,
-        autoSubmitted: submission.autoSubmitted,
+        submittedAt:    submission.submittedAt,
+        autoSubmitted:  submission.autoSubmitted,
+        hasTextQuestions: textMarks > 0,
       },
     });
   } catch (error) {

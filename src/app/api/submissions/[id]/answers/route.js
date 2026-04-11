@@ -4,7 +4,6 @@ import Submission from '@/lib/models/Submission';
 import { getTokenFromRequest } from '@/lib/utils/authMiddleware';
 import { verifyToken } from '@/lib/utils/jwt';
 
-// PUT /api/submissions/[id]/answers – save answers during exam
 export async function PUT(request, { params }) {
   try {
     const token = getTokenFromRequest(request);
