@@ -4,11 +4,13 @@ import { useState, useRef } from "react";
 import { ChevronDown, Trash2, Plus } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import RichEditor from "../shared/RichEditor";
+import useExamStore from "@/store/useExamStore";
+
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
-const TYPE_OPTIONS = [
+const ALL_TYPE_OPTIONS = [
   { value: "checkbox", label: "Checkbox" },
-  { value: "radio", label: "Radio" },
+  { value: "radio", label: "MCQ" },
   { value: "text", label: "Text" },
 ];
 
@@ -16,8 +18,8 @@ function getCorrectAnswerIndexes(correctAnswer, optionTexts) {
   const answers = Array.isArray(correctAnswer)
     ? correctAnswer
     : correctAnswer
-      ? [correctAnswer]
-      : [];
+    ? [correctAnswer]
+    : [];
 
   return answers
     .map((answer) => {
@@ -95,19 +97,43 @@ function OptionRow({
 }
 
 function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
-  const initialType = initialData?.type || "checkbox";
+  // Read allowed question types from exam store (set during Step 1)
+  const { step1Data } = useExamStore();
+
+  // Normalize step1Data.questionType to always be an array of allowed values
+  const allowedTypes = (
+    Array.isArray(step1Data?.questionType)
+      ? step1Data.questionType
+      : step1Data?.questionType
+      ? [step1Data.questionType]
+      : ["checkbox", "radio", "text"] // fallback: show all if store is empty
+  );
+
+  // Filter the global options list to only those selected in Step 1
+  const TYPE_OPTIONS = ALL_TYPE_OPTIONS.filter((opt) =>
+    allowedTypes.includes(opt.value)
+  );
+
+  // Resolve the initial type: use initialData.type if it's still allowed,
+  // otherwise fall back to the first allowed type
+  const resolvedInitialType =
+    initialData?.type && allowedTypes.includes(initialData.type)
+      ? initialData.type
+      : allowedTypes[0] || "checkbox";
+
   const initialOptions =
-    initialType === "text"
+    resolvedInitialType === "text"
       ? []
       : initialData?.options?.length
-        ? initialData.options
-        : ["", ""];
+      ? initialData.options
+      : ["", ""];
+
   const [questionNum, setQuestionNum] = useState(1);
   const [score, setScore] = useState(initialData?.marks || 1);
-  const [type, setType] = useState(initialType);
+  const [type, setType] = useState(resolvedInitialType);
   const [options, setOptions] = useState(initialOptions);
   const [correctAnswers, setCorrectAnswers] = useState(() =>
-    initialType === "text"
+    resolvedInitialType === "text"
       ? []
       : getCorrectAnswerIndexes(initialData?.correctAnswer, initialOptions)
   );
@@ -116,7 +142,7 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
   );
 
   const questionEditorRef = useRef(null);
-  const textAnswerRef = useRef(null); // ← fix: dedicated ref for text answer
+  const textAnswerRef = useRef(null);
 
   const toggleCorrect = (idx) => {
     const key = String(idx);
@@ -163,7 +189,6 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
     let data = { title, type, marks: score };
 
     if (type === "text") {
-      // Strip HTML tags from innerHTML to get plain text answer
       data.correctAnswer = textFromHtml(textAnswer);
       if (!data.correctAnswer) {
         alert("Correct answer is required.");
@@ -194,12 +219,14 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
     // Reset for next question
     setQuestionNum((n) => n + 1);
     setScore(1);
-    setType("checkbox");
-    setOptions(["", ""]);
+    // Reset type to first allowed type
+    const nextType = allowedTypes[0] || "checkbox";
+    setType(nextType);
+    setOptions(nextType === "text" ? [] : ["", ""]);
     setCorrectAnswers([]);
     setTextAnswer("");
     if (questionEditorRef.current) questionEditorRef.current.innerHTML = "";
-    if (textAnswerRef.current) textAnswerRef.current.innerHTML = ""; // ← fix: clear editor
+    if (textAnswerRef.current) textAnswerRef.current.innerHTML = "";
   };
 
   return (
@@ -219,11 +246,13 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
           onChange={(e) => setScore(Number(e.target.value))}
           className="w-10 border border-gray-200 rounded text-center text-sm"
         />
+
+        {/* Type dropdown — only shows types allowed from Step 1 */}
         <div className="relative">
           <select
             value={type}
             onChange={(e) => handleTypeChange(e.target.value)}
-            className="border border-gray-200 rounded text-xs px-2 py-1 appearance-none"
+            className="border border-gray-200 rounded text-xs px-2 py-1 appearance-none pr-5"
           >
             {TYPE_OPTIONS.map((t) => (
               <option key={t.value} value={t.value}>
@@ -233,9 +262,10 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
           </select>
           <ChevronDown
             size={10}
-            className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500"
+            className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
           />
         </div>
+
         <button type="button" onClick={onClose} className="cursor-pointer">
           <Trash2 size={14} />
         </button>
@@ -248,7 +278,7 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
         value={initialData?.title || ""}
       />
 
-      {/* MCQ options */}
+      {/* MCQ / Checkbox options */}
       {(type === "checkbox" || type === "radio") && (
         <>
           {options.map((_, idx) => (
@@ -308,7 +338,7 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
           onClick={() => handleSave(true)}
           className="px-5 py-2 bg-primary text-white rounded text-sm cursor-pointer"
         >
-          Save & Add More
+          Save &amp; Add More
         </button>
       </div>
     </Modal>
@@ -317,6 +347,5 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
 
 export default function QuestionModal(props) {
   const modalKey = props.isOpen ? props.initialData?._id || "new" : "closed";
-
   return <QuestionModalContent key={modalKey} {...props} />;
 }

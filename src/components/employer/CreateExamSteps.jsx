@@ -19,6 +19,7 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { toast } from "@/components/ui/Toast";
 import useExamStore from "@/store/useExamStore";
 import { cn } from "@/lib/utils/helpers";
+import QuestionMultiSelect from "./QuestionMultiSelect";
 
 const step1Schema = z
   .object({
@@ -28,7 +29,10 @@ const step1Schema = z
       .min(1, "Must allow at least 1 candidate"),
     totalSlots: z.coerce.number().min(1, "Must have at least 1 slot"),
     questionSets: z.coerce.number().min(1).default(1),
-    questionType: z.enum(["checkbox", "radio", "text"]),
+    // Changed: array of enums instead of single enum
+    questionType: z
+      .array(z.enum(["checkbox", "radio", "text"]))
+      .min(1, "Select at least one question type"),
     startTime: z.string().min(1, "Start time is required"),
     endTime: z.string().min(1, "End time is required"),
     duration: z.coerce.number().min(1, "Duration must be at least 1 minute"),
@@ -48,6 +52,12 @@ const questionTypeLabels = {
   text: "Text",
 };
 
+const QUESTION_TYPE_OPTIONS = [
+  { value: "radio", label: "MCQ" },
+  { value: "checkbox", label: "Checkbox" },
+  { value: "text", label: "Text" },
+];
+
 const TOTAL_SLOTS_OPTIONS = [1, 2, 3, 4, 5, 10, 15, 20, 25, 50];
 const QUESTION_SET_OPTIONS = [1, 2, 3, 4, 5];
 
@@ -63,7 +73,7 @@ export function StepIndicator({ currentStep }) {
         <span
           className={cn(
             "text-xs font-medium",
-            currentStep >= 1 ? "text-primary" : "text-gray-400"
+            currentStep >= 1 ? "text-primary" : "text-gray-400",
           )}
         >
           Basic Info
@@ -72,7 +82,7 @@ export function StepIndicator({ currentStep }) {
       <div
         className={cn(
           "mx-3 w-8 sm:w-auto",
-          currentStep > 1 ? "step-line-done" : "step-line-todo"
+          currentStep > 1 ? "step-line-done" : "step-line-todo",
         )}
       />
       <div className="flex items-center gap-2">
@@ -84,7 +94,7 @@ export function StepIndicator({ currentStep }) {
         <span
           className={cn(
             "text-xs font-medium",
-            currentStep >= 2 ? "text-primary" : "text-gray-400"
+            currentStep >= 2 ? "text-primary" : "text-gray-400",
           )}
         >
           Questions
@@ -109,13 +119,26 @@ export function Step1EditForm({ onSaved }) {
   const { step1Data, updateStep1 } = useExamStore();
   const router = useRouter();
 
+  // Normalize stored questionType to always be an array for defaultValues
+  const normalizedQuestionType = Array.isArray(step1Data?.questionType)
+    ? step1Data.questionType
+    : step1Data?.questionType
+      ? [step1Data.questionType]
+      : ["checkbox"];
+
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(step1Schema),
-    defaultValues: { questionType: "checkbox", questionSets: 1, ...step1Data },
+    defaultValues: {
+      questionSets: 1,
+      ...step1Data,
+      questionType: normalizedQuestionType,
+    },
   });
 
   const onSubmit = (data) => {
@@ -204,19 +227,13 @@ export function Step1EditForm({ onSaved }) {
             <label className="exam-label">
               Question Type <span className="text-red-500">*</span>
             </label>
-            <SelectWrapper>
-              <select {...register("questionType")} className="exam-select">
-                <option value="">Select question type</option>
-                <option value="checkbox">Checkbox</option>
-                <option value="radio">MCQ</option>
-                <option value="text">Text</option>
-              </select>
-            </SelectWrapper>
-            {errors.questionType && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.questionType.message}
-              </p>
-            )}
+            <QuestionMultiSelect
+              options={QUESTION_TYPE_OPTIONS}
+              register={register}
+              watch={watch}
+              setValue={setValue}
+              error={errors.questionType?.message}
+            />
           </div>
         </div>
 
@@ -231,7 +248,6 @@ export function Step1EditForm({ onSaved }) {
                 type="datetime-local"
                 className="exam-input"
               />
-              {/* <Clock className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" /> */}
             </div>
             {errors.startTime && (
               <p className="mt-1 text-xs text-red-500">
@@ -249,7 +265,6 @@ export function Step1EditForm({ onSaved }) {
                 type="datetime-local"
                 className="exam-input"
               />
-              {/* <Clock className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" /> */}
             </div>
             {errors.endTime && (
               <p className="mt-1 text-xs text-red-500">
@@ -314,7 +329,11 @@ export function Step1ViewMode({ onEdit, onContinue }) {
   const { step1Data } = useExamStore();
   const router = useRouter();
   const d = step1Data;
-  const qTypeLabel = questionTypeLabels[d.questionType] || d.questionType;
+
+  // Normalize to array and map to labels
+  const qTypeLabels = Array.isArray(d.questionType)
+    ? d.questionType.map((t) => questionTypeLabels[t] || t).join(", ")
+    : questionTypeLabels[d.questionType] || d.questionType || "—";
 
   return (
     <div>
@@ -367,7 +386,7 @@ export function Step1ViewMode({ onEdit, onContinue }) {
 
         <div>
           <p className="view-label">Question Type</p>
-          <p className="view-value">{qTypeLabel || "—"}</p>
+          <p className="view-value">{qTypeLabels}</p>
         </div>
       </div>
 
@@ -434,7 +453,7 @@ export function Step2Questions({ onBack, onSubmit, isSubmitting }) {
                       ? q.correctAnswer
                       : q.correctAnswer
                         ? [q.correctAnswer]
-                        : []
+                        : [],
                 );
 
                 return (
@@ -493,7 +512,7 @@ export function Step2Questions({ onBack, onSubmit, isSubmitting }) {
 
                                   {isCorrect &&
                                     (q.type === "radio" ? (
-                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 fill-green-500" />
+                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 " />
                                     ) : (
                                       <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                                     ))}
