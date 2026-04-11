@@ -8,7 +8,6 @@ import useAuthStore from "@/store/useAuthStore";
 
 function getPageLabel(pathname) {
   if (pathname.includes("/exam/")) return "Online Test";
-  if (pathname.includes("/my-exams")) return "My Exams";
   return "Dashboard";
 }
 

@@ -1,4 +1,3 @@
-// src/app/api/submissions/route.js
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongoose';
 import Exam from '@/lib/models/Exam';
@@ -41,11 +40,9 @@ export async function POST(request) {
           alreadySubmitted: true,
         });
       }
-      // Resume in-progress
       return NextResponse.json({ success: true, submission: existing, resumed: true });
     }
 
-    // Check slot availability
     const submissionCount = await Submission.countDocuments({ exam: examId });
     if (submissionCount >= exam.totalSlots) {
       return NextResponse.json({ error: 'No slots available for this exam' }, { status: 409 });
@@ -62,8 +59,6 @@ export async function POST(request) {
         status: 'in_progress',
       });
     } catch (createError) {
-      // A second near-simultaneous "start exam" request can race with the first
-      // against the unique (exam, candidate) index. Treat that as a resume.
       if (createError?.code === 11000) {
         const duplicateSubmission = await Submission.findOne({
           exam: examId,

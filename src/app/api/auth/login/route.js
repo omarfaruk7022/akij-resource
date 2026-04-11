@@ -1,4 +1,3 @@
-// src/app/api/auth/login/route.js
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db/mongoose";
 import User from "@/lib/models/User";
@@ -27,13 +26,6 @@ export async function POST(request) {
       );
     }
 
-    // If role is specified, validate it
-    // if (role && user.role !== role) {
-    //   return NextResponse.json(
-    //     { error: `No ${role} account found with this email` },
-    //     { status: 401 }
-    //   );
-    // }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {

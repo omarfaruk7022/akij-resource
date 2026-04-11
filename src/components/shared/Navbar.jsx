@@ -1,5 +1,4 @@
 "use client";
-// src/components/shared/Navbar.jsx
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
@@ -38,7 +37,7 @@ export default function Navbar({ activePage = "Dashboard" }) {
         .slice(0, 2)
     : "U";
 
-  // Ref ID mock — use user._id or a fallback
+  
   const refId = user?._id
     ? `Ref. ID : ${String(user._id).slice(-8).toUpperCase()}`
     : "Ref. ID : 16101121";
@@ -50,23 +49,19 @@ export default function Navbar({ activePage = "Dashboard" }) {
         <Image src="/images/logo.png" alt="Logo" width={100} height={100} />
       </div>
 
-      {/* Center — active page label */}
       <div className="absolute left-1/2 -translate-x-1/2 hidden sm:block">
         <span className="text-white text-sm font-medium">{activePage}</span>
       </div>
 
-      {/* Right — user info */}
       {user && (
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center gap-2.5 group cursor-pointer"
           >
-            {/* Avatar */}
             <div className="w-8 h-8 rounded-full bg-[#E05A3A] flex items-center justify-center flex-shrink-0 shadow">
               <span className="text-white text-xs font-bold">{initials}</span>
             </div>
-            {/* Name + Ref */}
             <div className="text-right hidden sm:block">
               <p className=" text-xs font-semibold leading-tight">
                 {user?.name || "Arif Hossain"}
@@ -80,7 +75,6 @@ export default function Navbar({ activePage = "Dashboard" }) {
             />
           </button>
 
-          {/* Dropdown */}
           {dropdownOpen && (
             <div className="absolute right-0 top-11 w-44 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50">
               <div className="px-4 py-2.5 border-b border-gray-100">

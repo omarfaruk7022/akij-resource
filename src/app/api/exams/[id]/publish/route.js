@@ -1,4 +1,3 @@
-// src/app/api/exams/[id]/publish/route.js
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongoose';
 import Exam from '@/lib/models/Exam';

@@ -1,14 +1,11 @@
-// src/lib/utils/authMiddleware.js
 import { NextResponse } from 'next/server';
 import { verifyToken } from './jwt';
 
 export function getTokenFromRequest(request) {
-  // Try Authorization header first
   const authHeader = request.headers.get('authorization');
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return authHeader.substring(7);
   }
-  // Try cookie
   const cookieHeader = request.headers.get('cookie');
   if (cookieHeader) {
     const cookies = Object.fromEntries(

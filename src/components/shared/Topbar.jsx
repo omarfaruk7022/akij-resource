@@ -1,7 +1,6 @@
-'use client';
-// src/components/shared/Topbar.jsx
-import { Bell, Search } from 'lucide-react';
-import useAuthStore from '@/store/useAuthStore';
+"use client";
+import { Bell } from "lucide-react";
+import useAuthStore from "@/store/useAuthStore";
 
 export default function Topbar({ title, subtitle }) {
   const { user } = useAuthStore();
@@ -18,7 +17,7 @@ export default function Topbar({ title, subtitle }) {
         </button>
         <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center shadow-sm">
           <span className="text-white text-sm font-semibold">
-            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+            {user?.name?.charAt(0)?.toUpperCase() || "U"}
           </span>
         </div>
       </div>

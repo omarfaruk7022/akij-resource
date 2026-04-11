@@ -1,5 +1,4 @@
 'use client';
-// src/store/useExamStore.js
 import { create } from 'zustand';
 
 const defaultStep1 = {
@@ -16,12 +15,10 @@ const defaultStep1 = {
 };
 
 const useExamStore = create((set, get) => ({
-  // Multi-step form
   currentStep: 1,
   step1Data: { ...defaultStep1 },
   questions: [],
 
-  // UI state
   isSubmitting: false,
   error: null,
 

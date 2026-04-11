@@ -1,4 +1,3 @@
-// src/lib/models/Exam.js
 import mongoose from 'mongoose';
 
 const QuestionSchema = new mongoose.Schema({

@@ -1,4 +1,3 @@
-// src/app/api/submissions/[id]/answers/route.js
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongoose';
 import Submission from '@/lib/models/Submission';

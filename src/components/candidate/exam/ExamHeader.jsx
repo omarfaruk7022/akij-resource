@@ -28,7 +28,7 @@ export default function ExamHeader({ user }) {
         />
       </div>
 
-      <h1 className="text-[#252B42] text-base font-semibold tracking-wide">
+      <h1 className="text-[#252B42] text-base font-semibold tracking-wide hidden md:block">
         Akij Resource
       </h1>
 
@@ -40,7 +40,9 @@ export default function ExamHeader({ user }) {
           <p className="text-[11px] leading-tight text-[#1A1A1A] font-medium truncate max-w-24">
             {user?.name || "Jhon Smit Doe..."}
           </p>
-          <p className="text-[9px] leading-tight text-[#9A9A9A]">Ref ID: {refId}</p>
+          <p className="text-[9px] leading-tight text-[#9A9A9A]">
+            Ref ID: {refId}
+          </p>
         </div>
         <ChevronDown className="w-3.5 h-3.5 text-[#777]" />
       </div>

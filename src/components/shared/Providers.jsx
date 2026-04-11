@@ -1,5 +1,4 @@
 'use client';
-// src/components/shared/Providers.jsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 

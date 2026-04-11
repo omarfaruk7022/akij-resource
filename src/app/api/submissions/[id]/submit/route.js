@@ -1,4 +1,3 @@
-// src/app/api/submissions/[id]/submit/route.js
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db/mongoose';
 import Exam from '@/lib/models/Exam';
@@ -41,7 +40,6 @@ function scoreSubmission(exam, answers) {
     if (!answerEntry || answerEntry.answer === undefined || answerEntry.answer === null || answerEntry.answer === '') continue;
 
     if (question.type === 'text') {
-      // Text questions require manual grading – give 0 for now
       continue;
     }
 

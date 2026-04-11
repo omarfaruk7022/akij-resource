@@ -1,14 +1,14 @@
 'use client';
-// src/store/useExamSessionStore.js
+
 import { create } from 'zustand';
 import axios from 'axios';
 
 const useExamSessionStore = create((set, get) => ({
   exam: null,
   submission: null,
-  answers: {},            // { questionId: answer }
+  answers: {},           
   currentQuestion: 0,
-  timeLeft: 0,            // seconds
+  timeLeft: 0,            
   isFullscreen: false,
   tabSwitchCount: 0,
   fullscreenExitCount: 0,
@@ -85,9 +85,9 @@ const useExamSessionStore = create((set, get) => ({
       tabSwitchCount: event === 'tab_switch' ? state.tabSwitchCount + 1 : state.tabSwitchCount,
       fullscreenExitCount: event === 'fullscreen_exit' ? state.fullscreenExitCount + 1 : state.fullscreenExitCount,
       warningMessage: event === 'tab_switch'
-        ? `⚠️ Tab switch detected! (${get().tabSwitchCount + 1} time${get().tabSwitchCount + 1 > 1 ? 's' : ''})`
+        ? ` Tab switch detected! (${get().tabSwitchCount + 1} time${get().tabSwitchCount + 1 > 1 ? 's' : ''})`
         : event === 'fullscreen_exit'
-        ? '⚠️ Please stay in fullscreen mode during the exam!'
+        ? ' Please stay in fullscreen mode during the exam!'
         : null,
     }));
 

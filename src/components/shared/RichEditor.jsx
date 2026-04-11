@@ -22,7 +22,7 @@ export default function RichEditor({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden mt-2">
+    <div className=" rounded-lg overflow-hidden">
       <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-gray-200 bg-[#FAFAFA] flex-wrap">
         <button
           type="button"

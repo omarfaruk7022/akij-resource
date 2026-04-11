@@ -1,4 +1,4 @@
-// src/lib/models/Submission.js
+
 import mongoose from 'mongoose';
 
 const AnswerSchema = new mongoose.Schema({

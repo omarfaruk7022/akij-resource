@@ -1,4 +1,4 @@
-// src/app/layout.jsx
+
 import "./globals.css";
 import Providers from "@/components/shared/Providers";
 import { Geist } from "next/font/google";

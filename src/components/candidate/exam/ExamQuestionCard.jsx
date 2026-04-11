@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  AlertTriangle,
-  AlignLeft,
-  Bold,
-  ChevronDown,
-  Italic,
-  Redo2,
-  Underline,
-  Undo2,
-} from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { formatTimer } from "@/lib/utils/helpers";
 import RichEditor from "@/components/shared/RichEditor";
 import { useRef } from "react";
@@ -29,49 +20,44 @@ export default function ExamQuestionCard({
 }) {
   const timerDanger = timeLeft <= 300;
   const editorRefs = useRef({});
+
   return (
-    <div className="w-full max-w-[720px] mx-auto mb-[78px] px-4">
+    <div className="w-full max-w-4xl mx-auto mb-[78px] px-4">
+      {/* Tab warning */}
       {tabSwitchCount > 0 && (
-        <div className="mb-3 flex items-center justify-center gap-1.5 text-orange-600 text-xs">
-          <AlertTriangle className="w-3.5 h-3.5" />
+        <div className="mb-4 flex items-center justify-center gap-2 text-orange-600 text-sm">
+          <AlertTriangle className="w-4 h-4" />
           {tabSwitchCount} tab switch{tabSwitchCount > 1 ? "es" : ""} detected
         </div>
       )}
 
-      <div className="flex items-center justify-between px-6 mb-4 bg-white rounded-lg border border-[#E9E9E9] shadow-sm p-5">
-        <p className="text-sm font-medium text-[#252B42]">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 bg-white rounded-[15px] border border-gray-200 px-4 sm:px-8 py-4 sm:py-6">
+        <p className="text-sm sm:text-base font-semibold text-[#252B42]">
           Question ({currentQuestion + 1}/{totalQuestions})
         </p>
+
         <div
-          className={`w-[178px] h-10 rounded bg-[#F3F4F6] flex items-center justify-center text-sm font-semibold ${
-            timerDanger ? "text-red-600 timer-danger" : "text-[#252B42]"
+          className={`w-full sm:w-[200px] h-10 sm:h-12 rounded-[10px] bg-[#F3F4F6] flex items-center justify-center text-sm sm:text-base font-semibold ${
+            timerDanger ? "text-red-600" : "text-[#252B42]"
           }`}
         >
           {formatTimer(timeLeft)} left
         </div>
       </div>
 
-      <section className="bg-white rounded-lg border border-[#E9E9E9] shadow-sm p-5">
+      {/* Main Card */}
+      <section className="bg-white rounded-[15px] border border-gray-200 p-7">
         {currentQ && (
           <>
-            <p className="text-[16px] leading-6 text-[#252B42] mb-4">
+            {/* Question */}
+            <p className="text-[18px] leading-7 text-[#252B42] mb-6 font-medium">
               Q{currentQuestion + 1}. {currentQ.title}
             </p>
 
+            {/* TEXT TYPE */}
             {currentQ.type === "text" ? (
-              <div className="border border-[#E3E3E3] rounded overflow-hidden">
-                {/* <div className="h-10 bg-[#FAFAFA] border-b border-[#EEEEEE] px-4 flex items-center gap-3 text-[#4E4E4E]">
-                  <Undo2 className="w-3.5 h-3.5" />
-                  <Redo2 className="w-3.5 h-3.5" />
-                  <span className="text-[11px]">Normal text</span>
-                  <ChevronDown className="w-3 h-3 -ml-2" />
-                  <span className="h-4 w-px bg-[#DADADA]" />
-                  <AlignLeft className="w-3.5 h-3.5" />
-                  <ChevronDown className="w-3 h-3 -ml-2" />
-                  <Bold className="w-3.5 h-3.5" />
-                  <Italic className="w-3.5 h-3.5" />
-                  <Underline className="w-3.5 h-3.5" />
-                </div> */}
+              <div className="border border-[#E3E3E3] rounded-2xl overflow-hidden">
                 <RichEditor
                   contentRef={{
                     get current() {
@@ -87,7 +73,8 @@ export default function ExamQuestionCard({
                 />
               </div>
             ) : (
-              <div className="space-y-3">
+              /* OPTIONS */
+              <div className="space-y-4">
                 {currentQ.options?.map((option, optIdx) => {
                   const isChecked =
                     currentQ.type === "checkbox"
@@ -98,18 +85,18 @@ export default function ExamQuestionCard({
                   return (
                     <label
                       key={optIdx}
-                      className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all
-        ${
-          isChecked
-            ? "border-[#6C5CE7] bg-[#F4F2FF]"
-            : "border-gray-200 bg-white hover:border-[#CFC9FF]"
-        }`}
+                      className={`flex items-center gap-4 p-5 rounded-2xl border cursor-pointer transition-all
+                      ${
+                        isChecked
+                          ? "border-[#6C5CE7] bg-[#F4F2FF]"
+                          : "border-gray-200 bg-white hover:border-[#CFC9FF]"
+                      }`}
                     >
                       {/* Custom Input */}
                       <div
-                        className={`flex items-center justify-center w-5 h-5 border shrink-0 ${
+                        className={`flex items-center justify-center w-6 h-6 border shrink-0 ${
                           currentQ.type === "checkbox"
-                            ? "rounded-[6px]"
+                            ? "rounded-md"
                             : "rounded-full"
                         } ${
                           isChecked
@@ -118,12 +105,12 @@ export default function ExamQuestionCard({
                         }`}
                       >
                         {currentQ.type === "radio" && isChecked && (
-                          <div className="w-2 h-2 bg-white rounded-full" />
+                          <div className="w-2.5 h-2.5 bg-white rounded-full" />
                         )}
 
                         {currentQ.type === "checkbox" && isChecked && (
                           <svg
-                            className="w-3 h-3 text-white"
+                            className="w-3.5 h-3.5 text-white"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="3"
@@ -134,7 +121,7 @@ export default function ExamQuestionCard({
                         )}
                       </div>
 
-                      {/* Hidden input (for logic) */}
+                      {/* Hidden input */}
                       <input
                         type={
                           currentQ.type === "checkbox" ? "checkbox" : "radio"
@@ -148,18 +135,20 @@ export default function ExamQuestionCard({
                         className="hidden"
                       />
 
-                      <span className="text-sm text-gray-800">{option}</span>
+                      {/* Option Text */}
+                      <span className="text-base text-gray-800">{option}</span>
                     </label>
                   );
                 })}
               </div>
             )}
 
-            <div className="flex items-center justify-between mt-6">
+            {/* Buttons */}
+            <div className="flex items-center justify-between mt-8 flex-col sm:flex-row gap-4">
               <button
                 onClick={onSkip}
                 disabled={currentQuestion === totalQuestions - 1}
-                className="h-9 px-5 rounded border border-[#E4E4E4] bg-white text-[#252B42] text-xs font-semibold cursor-pointer hover:bg-[#FAFAFA] disabled:opacity-45 disabled:cursor-not-allowed transition-colors"
+                className="h-11 px-6 rounded-[12px] border border-[#E4E4E4] bg-white text-sm font-semibold hover:bg-[#FAFAFA] disabled:opacity-45"
               >
                 Skip this Question
               </button>
@@ -167,7 +156,7 @@ export default function ExamQuestionCard({
               <button
                 onClick={onSaveContinue}
                 disabled={isSubmitting}
-                className="h-9 px-8 rounded bg-primary text-white text-xs font-semibold cursor-pointer hover:bg-[#5522EE] disabled:opacity-50 transition-colors"
+                className="h-11 px-10 rounded-[12px] bg-primary text-white text-sm font-semibold hover:bg-[#5522EE] disabled:opacity-50"
               >
                 {isSubmitting
                   ? "Submitting..."
