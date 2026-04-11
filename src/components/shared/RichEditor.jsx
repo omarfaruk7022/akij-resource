@@ -1,3 +1,4 @@
+import { Redo2, Undo2 } from "lucide-react";
 import { useEffect } from "react";
 
 export default function RichEditor({
@@ -21,45 +22,25 @@ export default function RichEditor({
   };
 
   return (
-    <div className="border border-gray-200 rounded overflow-hidden mt-2">
+    <div className="border border-gray-200 rounded-lg overflow-hidden mt-2">
       <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-gray-200 bg-[#FAFAFA] flex-wrap">
         <button
           type="button"
           onClick={() => exec("undo")}
-          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors cursor-pointer"
+          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-primary transition-colors cursor-pointer"
         >
-          <svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <path d="M3 7v6h6" />
-            <path d="M3 13A9 9 0 1 0 5.27 5.27" />
-          </svg>
+          <Undo2 className="w-3.5 h-3.5" />
         </button>
         <button
           type="button"
           onClick={() => exec("redo")}
-          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors cursor-pointer"
+          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-primary transition-colors cursor-pointer"
         >
-          <svg
-            width="11"
-            height="11"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <path d="M21 7v6h-6" />
-            <path d="M21 13A9 9 0 1 1 18.73 5.27" />
-          </svg>
+          <Redo2 className="w-3.5 h-3.5" />
         </button>
         <button
           type="button"
-          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors whitespace-nowrap cursor-pointer"
+          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-primary transition-colors whitespace-nowrap cursor-pointer"
         >
           Normal text
           <svg
@@ -77,7 +58,7 @@ export default function RichEditor({
         <button
           type="button"
           onClick={() => exec("insertUnorderedList")}
-          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors cursor-pointer"
+          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] text-[#555] hover:bg-[#F0EBFF] hover:text-primary transition-colors cursor-pointer"
         >
           <svg
             width="11"
@@ -104,14 +85,14 @@ export default function RichEditor({
         <button
           type="button"
           onClick={() => exec("bold")}
-          className="px-1.5 py-0.5 rounded text-[13px] font-black text-[#333] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors cursor-pointer"
+          className="px-1.5 py-0.5 rounded text-[13px] font-black text-[#333] hover:bg-[#F0EBFF] hover:text-primary transition-colors cursor-pointer"
         >
           B
         </button>
         <button
           type="button"
           onClick={() => exec("italic")}
-          className="px-1.5 py-0.5 rounded text-[13px] italic font-semibold text-[#333] hover:bg-[#F0EBFF] hover:text-[#6633FF] transition-colors cursor-pointer"
+          className="px-1.5 py-0.5 rounded text-[13px] italic font-semibold text-[#333] hover:bg-[#F0EBFF] hover:text-primary transition-colors cursor-pointer"
         >
           I
         </button>

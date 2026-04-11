@@ -107,8 +107,15 @@ export default function ExamQuestionCard({
                     >
                       {/* Custom Input */}
                       <div
-                        className={`flex items-center justify-center w-5 h-5 rounded-full border
-          ${isChecked ? "border-[#6C5CE7] bg-[#6C5CE7]" : "border-gray-300"}`}
+                        className={`flex items-center justify-center w-5 h-5 border shrink-0 ${
+                          currentQ.type === "checkbox"
+                            ? "rounded-[6px]"
+                            : "rounded-full"
+                        } ${
+                          isChecked
+                            ? "border-[#6C5CE7] bg-[#6C5CE7]"
+                            : "border-gray-300"
+                        }`}
                       >
                         {currentQ.type === "radio" && isChecked && (
                           <div className="w-2 h-2 bg-white rounded-full" />
@@ -160,7 +167,7 @@ export default function ExamQuestionCard({
               <button
                 onClick={onSaveContinue}
                 disabled={isSubmitting}
-                className="h-9 px-8 rounded bg-[#6633FF] text-white text-xs font-semibold cursor-pointer hover:bg-[#5522EE] disabled:opacity-50 transition-colors"
+                className="h-9 px-8 rounded bg-primary text-white text-xs font-semibold cursor-pointer hover:bg-[#5522EE] disabled:opacity-50 transition-colors"
               >
                 {isSubmitting
                   ? "Submitting..."

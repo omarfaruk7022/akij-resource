@@ -1,6 +1,7 @@
 "use client";
 // src/app/employer/dashboard/page.jsx
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -35,7 +36,7 @@ function ExamCard({ exam, onViewCandidates }) {
   return (
     <div className="bg-white rounded-lg border border-[#E8E8E8] p-5 flex flex-col gap-4 hover:shadow-md transition-shadow duration-200">
       {/* Title */}
-      <h3 className="text-[#1A1A1A] text-sm font-semibold leading-snug line-clamp-2">
+      <h3 className="text-[#1A1A1A] text-md md:text-lg font-semibold leading-snug line-clamp-2">
         {exam.title}
       </h3>
 
@@ -87,7 +88,14 @@ function ExamCard({ exam, onViewCandidates }) {
       <div>
         <button
           onClick={() => onViewCandidates(exam._id)}
-          className="px-4 py-1.5 rounded border border-[#6633FF] text-[#6633FF] text-xs font-medium cursor-pointer hover:bg-[#6633FF] hover:text-white transition-colors duration-150"
+          className="
+    px-5 py-2 rounded-lg
+    border border-primary
+    text-primary text-sm font-medium
+    cursor-pointer
+    hover:bg-primary hover:!text-white
+    transition-colors duration-150
+  "
         >
           View Candidates
         </button>
@@ -132,7 +140,7 @@ export default function EmployerDashboard() {
       <div className="flex-1 px-6 md:px-8 py-6">
         {/* Online Tests header */}
         <div className="flex items-center justify-between mb-5 gap-4 flex-wrap">
-          <h2 className="text-[#1A1A1A] text-base font-bold">Online Tests</h2>
+          <h2 className="text-[#1A1A1A] text-2xl font-bold">Online Tests</h2>
 
           {/* Search bar */}
           <div className="flex items-center gap-3 flex-1 max-w-sm ml-4">
@@ -140,9 +148,9 @@ export default function EmployerDashboard() {
               <input
                 type="text"
                 placeholder="Search exam title..."
-                className="w-full h-9 pl-3 pr-9 text-xs border border-[#DADADA] rounded bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#6633FF] transition-colors"
+                className="w-full h-9 pl-3 pr-9 text-xs border border-[#DADADA] rounded bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
               />
-              <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center bg-[#6633FF] rounded-r cursor-pointer hover:bg-[#5522EE] transition-colors">
+              <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center bg-primary rounded-r cursor-pointer hover:bg-[#5522EE] transition-colors">
                 <svg
                   className="w-4 h-4 text-white"
                   fill="none"
@@ -163,7 +171,7 @@ export default function EmployerDashboard() {
           {/* Create Online Test button */}
           <button
             onClick={() => router.push("/employer/create-exam")}
-            className="h-9 px-5 bg-[#6633FF] text-white text-xs font-semibold rounded cursor-pointer hover:bg-[#5522EE] transition-colors whitespace-nowrap flex-shrink-0 shadow-sm"
+            className="px-5 py-3 bg-primary text-white text-sm font-semibold rounded-lg cursor-pointer hover:bg-[#5522EE] transition-colors whitespace-nowrap flex-shrink-0 shadow-sm"
           >
             Create Online Test
           </button>
@@ -180,34 +188,23 @@ export default function EmployerDashboard() {
             ))}
           </div>
         ) : exams.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-14 h-14 bg-[#F0EBFF] rounded-xl flex items-center justify-center mb-4">
-              <svg
-                className="w-7 h-7 text-[#6633FF]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+          <div className="flex flex-col items-center justify-center py-10 text-center bg-white rounded-lg ">
+            <div className="mb-5">
+              <Image
+                src="/images/empty-online-test.png"
+                alt="No online tests available"
+                width={120}
+                height={113}
+                priority
+              />
             </div>
-            <h3 className="text-sm font-semibold text-gray-800 mb-1">
-              No Online Tests Yet
+            <h3 className="text-base font-semibold text-[#1A1A1A] mb-2">
+              No Online Test Available
             </h3>
-            <p className="text-xs text-gray-500 mb-5">
-              Create your first online assessment to get started.
+            <p className="max-w-full text-sm leading-6 text-[#777] mb-6">
+              Currently, there are no online tests available. Please check back
+              later for updates.
             </p>
-            <button
-              onClick={() => router.push("/employer/create-exam")}
-              className="px-5 py-2 bg-[#6633FF] text-white text-xs font-semibold rounded cursor-pointer hover:bg-[#5522EE] transition-colors"
-            >
-              Create Online Test
-            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -231,7 +228,7 @@ export default function EmployerDashboard() {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
+                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-primary hover:text-primary transition-colors text-xs"
               >
                 ‹
               </button>
@@ -241,8 +238,8 @@ export default function EmployerDashboard() {
                   onClick={() => setCurrentPage(p)}
                   className={`w-7 h-7 flex items-center justify-center rounded border text-xs font-medium cursor-pointer transition-colors ${
                     p === currentPage
-                      ? "bg-[#6633FF] border-[#6633FF] text-white"
-                      : "bg-white border-[#DADADA] text-gray-600 hover:border-[#6633FF] hover:text-[#6633FF]"
+                      ? "bg-primary border-primary text-white"
+                      : "bg-white border-[#DADADA] text-gray-600 hover:border-primary hover:text-primary"
                   }`}
                 >
                   {p}
@@ -253,7 +250,7 @@ export default function EmployerDashboard() {
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage === totalPages || totalPages === 0}
-                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
+                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-primary hover:text-primary transition-colors text-xs"
               >
                 ›
               </button>
@@ -271,7 +268,7 @@ export default function EmployerDashboard() {
                     setPerPage(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="h-7 pl-2 pr-6 text-xs border border-[#DADADA] rounded bg-white text-gray-700 focus:outline-none focus:border-[#6633FF] appearance-none cursor-pointer"
+                  className="h-7 pl-2 pr-6 text-xs border border-[#DADADA] rounded bg-white text-gray-700 focus:outline-none focus:border-primary appearance-none cursor-pointer"
                 >
                   {ITEMS_PER_PAGE_OPTIONS.map((n) => (
                     <option key={n} value={n}>

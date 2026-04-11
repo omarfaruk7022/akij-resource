@@ -58,9 +58,9 @@ export default function CandidateDashboard() {
                   setCurrentPage(1);
                 }}
                 placeholder="Search exam title..."
-                className="w-full h-9 pl-3 pr-9 text-xs border border-[#DADADA] rounded bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#6633FF] transition-colors"
+                className="w-full h-9 pl-3 pr-9 text-xs border border-[#DADADA] rounded bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
               />
-              <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center bg-[#6633FF] rounded-r cursor-pointer hover:bg-[#5522EE] transition-colors">
+              <div className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center bg-primary rounded-r cursor-pointer hover:bg-[#5522EE] transition-colors">
                 <svg
                   className="w-4 h-4 text-white"
                   fill="none"
@@ -91,7 +91,7 @@ export default function CandidateDashboard() {
         ) : filteredExams.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-14 h-14 bg-[#F0EBFF] rounded-xl flex items-center justify-center mb-4">
-              <BookOpen className="w-7 h-7 text-[#6633FF]" />
+              <BookOpen className="w-7 h-7 text-primary" />
             </div>
             <h3 className="text-sm font-semibold text-gray-800 mb-1">
               No Online Tests Yet
@@ -118,7 +118,7 @@ export default function CandidateDashboard() {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
+                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-primary hover:text-primary transition-colors text-xs"
               >
                 ‹
               </button>
@@ -128,8 +128,8 @@ export default function CandidateDashboard() {
                   onClick={() => setCurrentPage(p)}
                   className={`w-7 h-7 flex items-center justify-center rounded border text-xs font-medium cursor-pointer transition-colors ${
                     p === currentPage
-                      ? "bg-[#6633FF] border-[#6633FF] text-white"
-                      : "bg-white border-[#DADADA] text-gray-600 hover:border-[#6633FF] hover:text-[#6633FF]"
+                      ? "bg-primary border-primary text-white"
+                      : "bg-white border-[#DADADA] text-gray-600 hover:border-primary hover:text-primary"
                   }`}
                 >
                   {p}
@@ -140,7 +140,7 @@ export default function CandidateDashboard() {
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
                 }
                 disabled={currentPage === totalPages || totalPages === 0}
-                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-[#6633FF] hover:text-[#6633FF] transition-colors text-xs"
+                className="w-7 h-7 flex items-center justify-center rounded border border-[#DADADA] bg-white text-gray-500 cursor-pointer disabled:opacity-40 hover:border-primary hover:text-primary transition-colors text-xs"
               >
                 ›
               </button>
@@ -157,7 +157,7 @@ export default function CandidateDashboard() {
                     setPerPage(Number(event.target.value));
                     setCurrentPage(1);
                   }}
-                  className="h-7 pl-2 pr-6 text-xs border border-[#DADADA] rounded bg-white text-gray-700 focus:outline-none focus:border-[#6633FF] appearance-none cursor-pointer"
+                  className="h-7 pl-2 pr-6 text-xs border border-[#DADADA] rounded bg-white text-gray-700 focus:outline-none focus:border-primary appearance-none cursor-pointer"
                 >
                   {ITEMS_PER_PAGE_OPTIONS.map((n) => (
                     <option key={n} value={n}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock3, XCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function ResultScreen({ result, exam, user, onBack }) {
   const isTimeout = Boolean(result?.autoSubmitted);
@@ -18,20 +18,27 @@ export default function ResultScreen({ result, exam, user, onBack }) {
       <div
         className={`bg-white border border-[#e9edf3] w-full text-center px-8 py-10 ${
           isTimeout
-            ? "max-w-[460px] rounded-2xl shadow-2xl"
-            : "max-w-[920px] rounded-2xl shadow-sm"
+            ? "max-w-[860px] rounded-2xl shadow-2xl"
+            : "max-w-[1040px] rounded-2xl shadow-sm"
         }`}
       >
-        <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center relative">
+        <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center">
           {isTimeout ? (
-            <>
-              <Clock3 className="w-11 h-11 text-[#3f6ea3]" strokeWidth={1.7} />
-              <span className="absolute right-1 bottom-1 w-5 h-5 rounded-full bg-[#ef5b6b] flex items-center justify-center">
-                <XCircle className="w-3 h-3 text-white fill-white" />
-              </span>
-            </>
+            <Image
+              src="/images/timeout.png"
+              alt="Exam timed out"
+              width={56}
+              height={56}
+              priority
+            />
           ) : (
-            <CheckCircle2 className="w-12 h-12 text-[#4a90e2] fill-[#4a90e2]" />
+            <Image
+              src="/images/correct.png"
+              alt="Exam submitted successfully"
+              width={56}
+              height={56}
+              priority
+            />
           )}
         </div>
         <h1 className="text-[28px] font-semibold text-[#2f3b4a] mb-4">{title}</h1>

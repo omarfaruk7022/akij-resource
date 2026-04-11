@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { ChevronDown, Trash2, Plus } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import RichEditor from "../shared/RichEditor";
-
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
 const TYPE_OPTIONS = [
@@ -43,6 +42,7 @@ function textFromHtml(value) {
 }
 
 function OptionRow({
+  type,
   letter,
   value,
   isCorrect,
@@ -52,20 +52,25 @@ function OptionRow({
   showDelete,
 }) {
   const editorRef = useRef(null);
+
   return (
-    <div className="mt-3">
-      <div className="flex items-center gap-2.5">
+    <div className="ml-3 mt-3">
+      <div className="flex items-center gap-3 px-1">
         <button
           type="button"
-          onClick={onToggleCorrect}
-          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer ${
-            isCorrect
-              ? "bg-[#6633FF] text-white"
-              : "bg-gray-200 text-gray-600 hover:bg-[#6633FF] hover:text-white"
-          }`}
+          className="w-7 h-7 rounded-full border border-[#98A2B3] bg-white flex items-center justify-center text-xs font-medium text-[#667085]"
         >
           {letter}
         </button>
+        <label className="flex items-center gap-2 text-sm text-[#344054] cursor-pointer select-none">
+          <input
+            type={type === "radio" ? "radio" : "checkbox"}
+            checked={isCorrect}
+            onChange={onToggleCorrect}
+            className="w-4 h-4 shrink-0 accent-primary"
+          />
+          <span>Set as correct answer</span>
+        </label>
         <div className="flex-1" />
         {showDelete && (
           <button
@@ -77,7 +82,7 @@ function OptionRow({
           </button>
         )}
       </div>
-      <div className="border border-t-0 border-gray-200 rounded-b">
+      <div className=" ">
         <RichEditor
           contentRef={editorRef}
           placeholder="Type option..."
@@ -201,7 +206,7 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
     <Modal isOpen={isOpen} onClose={onClose} size="md">
       {/* Header */}
       <div className="flex items-center gap-2 pb-3 border-b border-gray-200 mb-4">
-        <div className="w-6 h-6 rounded-full bg-[#6633FF] text-white flex items-center justify-center text-xs font-bold">
+        <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs border border-gray-200">
           {questionNum}
         </div>
         <span className="text-sm font-semibold flex-1">
@@ -249,6 +254,7 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
           {options.map((_, idx) => (
             <OptionRow
               key={idx}
+              type={type}
               letter={LETTERS[idx]}
               value={options[idx]}
               isCorrect={correctAnswers.includes(String(idx))}
@@ -261,7 +267,7 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
           <button
             type="button"
             onClick={addOption}
-            className="flex items-center gap-1 mt-3 text-sm text-[#6633FF] cursor-pointer"
+            className="flex items-center gap-1 mt-3 text-sm text-primary cursor-pointer"
           >
             <Plus size={14} /> Another option
           </button>
@@ -270,13 +276,14 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
 
       {/* Text answer */}
       {type === "text" && (
-        <div className="mt-3">
-          <div className="flex items-center px-2.5 py-1.5 border border-gray-200 rounded-t bg-[#FAFAFA]">
-            <div className="w-5 h-5 rounded-full bg-[#6633FF] text-white flex items-center justify-center text-[10px]">
-              A
-            </div>
-          </div>
-          <div className="border border-t-0 border-gray-200 rounded-b">
+        <div className="mt-3 ml-3">
+          <button
+            type="button"
+            className="w-7 h-7 rounded-full border border-[#98A2B3] bg-white flex items-center justify-center text-xs font-medium text-[#667085]"
+          >
+            A
+          </button>
+          <div className="">
             <RichEditor
               contentRef={textAnswerRef}
               value={textAnswer}
@@ -299,7 +306,7 @@ function QuestionModalContent({ isOpen, onClose, onSave, initialData }) {
         <button
           type="button"
           onClick={() => handleSave(true)}
-          className="px-5 py-2 bg-[#6633FF] text-white rounded text-sm cursor-pointer"
+          className="px-5 py-2 bg-primary text-white rounded text-sm cursor-pointer"
         >
           Save & Add More
         </button>

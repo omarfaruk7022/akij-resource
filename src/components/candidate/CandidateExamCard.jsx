@@ -5,7 +5,8 @@ import { formatDuration } from "@/lib/utils/helpers";
 
 export default function CandidateExamCard({ exam, onStart }) {
   const duration = exam.duration;
-  const questions = exam.questionCount ?? exam.questions?.length ?? exam.questionSets;
+  const questions =
+    exam.questionCount ?? exam.questions?.length ?? exam.questionSets;
   const negativeMark = exam.negativeMark ?? 0;
   const now = new Date();
   const start = new Date(exam.startTime);
@@ -15,10 +16,10 @@ export default function CandidateExamCard({ exam, onStart }) {
   const actionLabel = isCompleted
     ? "Completed"
     : now < start
-    ? "Starts Soon"
-    : now > end
-    ? "Ended"
-    : "Start Exam";
+      ? "Starts Soon"
+      : now > end
+        ? "Ended"
+        : "Start Exam";
 
   return (
     <div className="bg-white rounded-lg border border-[#E8E8E8] p-5 flex flex-col gap-4 hover:shadow-md transition-shadow duration-200">
@@ -65,7 +66,24 @@ export default function CandidateExamCard({ exam, onStart }) {
           type="button"
           onClick={() => onStart(exam._id)}
           disabled={!isActive}
-          className="px-4 py-1.5 rounded border border-[#6633FF] text-[#6633FF] text-xs font-medium cursor-pointer hover:bg-[#6633FF] hover:text-white transition-colors duration-150 disabled:opacity-50 disabled:hover:bg-white disabled:hover:text-[#6633FF] disabled:cursor-not-allowed"
+          className="
+    px-5 py-2 rounded-lg
+    border border-primary
+    text-primary text-sm font-medium
+
+    transition-all duration-200 ease-in-out
+
+    hover:bg-primary hover:!text-white hover:shadow-md
+
+    active:scale-95
+
+    disabled:opacity-50
+    disabled:cursor-not-allowed
+    disabled:hover:bg-transparent
+    disabled:hover:text-primary
+    disabled:hover:shadow-none
+    disabled:active:scale-100
+  "
         >
           {actionLabel}
         </button>

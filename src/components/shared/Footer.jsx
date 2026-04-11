@@ -2,11 +2,10 @@
 
 import Image from "next/image";
 
-// src/components/shared/Footer.jsx
 
 export default function Footer() {
   return (
-    <footer className="bg-[#130B2C] min-h-[52px] flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 px-4 sm:px-6 md:px-12 py-3 sm:py-0 flex-shrink-0 w-full">
+    <footer className="bg-secondary min-h-[52px] flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 px-4 sm:px-6 md:px-12 py-3 sm:py-0 flex-shrink-0 w-full">
       {/* Left — Powered by + Logo */}
       <div className="flex items-center gap-2">
         <span className="text-gray-400 text-xs font-normal">Powered by</span>

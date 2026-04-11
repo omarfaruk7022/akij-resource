@@ -51,13 +51,36 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No slots available for this exam' }, { status: 409 });
     }
 
-    const submission = await Submission.create({
-      exam: examId,
-      candidate: user.id,
-      answers: [],
-      startedAt: now,
-      status: 'in_progress',
-    });
+    let submission;
+
+    try {
+      submission = await Submission.create({
+        exam: examId,
+        candidate: user.id,
+        answers: [],
+        startedAt: now,
+        status: 'in_progress',
+      });
+    } catch (createError) {
+      // A second near-simultaneous "start exam" request can race with the first
+      // against the unique (exam, candidate) index. Treat that as a resume.
+      if (createError?.code === 11000) {
+        const duplicateSubmission = await Submission.findOne({
+          exam: examId,
+          candidate: user.id,
+        });
+
+        if (duplicateSubmission) {
+          return NextResponse.json({
+            success: true,
+            submission: duplicateSubmission,
+            resumed: true,
+          });
+        }
+      }
+
+      throw createError;
+    }
 
     return NextResponse.json({ success: true, submission }, { status: 201 });
   } catch (error) {

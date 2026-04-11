@@ -63,7 +63,7 @@ export function StepIndicator({ currentStep }) {
         <span
           className={cn(
             "text-xs font-medium",
-            currentStep >= 1 ? "text-[#6633FF]" : "text-gray-400"
+            currentStep >= 1 ? "text-primary" : "text-gray-400"
           )}
         >
           Basic Info
@@ -84,7 +84,7 @@ export function StepIndicator({ currentStep }) {
         <span
           className={cn(
             "text-xs font-medium",
-            currentStep >= 2 ? "text-[#6633FF]" : "text-gray-400"
+            currentStep >= 2 ? "text-primary" : "text-gray-400"
           )}
         >
           Questions
@@ -326,7 +326,7 @@ export function Step1ViewMode({ onEdit, onContinue }) {
           <button
             type="button"
             onClick={onEdit}
-            className="flex items-center gap-1.5 text-[#6633FF] text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
+            className="flex items-center gap-1.5 text-primary text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
           >
             <Pencil className="w-3.5 h-3.5" />
             Edit
@@ -371,7 +371,7 @@ export function Step1ViewMode({ onEdit, onContinue }) {
         </div>
       </div>
 
-      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-6">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-6 bg-white p-4 rounded-lg">
         <button
           type="button"
           className="btn-cancel w-full sm:w-auto cursor-pointer"
@@ -423,7 +423,7 @@ export function Step2Questions({ onBack, onSubmit, isSubmitting }) {
   return (
     <div>
       {questions.length !== 0 && (
-        <div className="min-h-screen">
+        <div className="">
           <div className="max-w-5xl mx-auto">
             <div className="space-y-6">
               {questions.map((q, idx) => {
@@ -521,7 +521,7 @@ export function Step2Questions({ onBack, onSubmit, isSubmitting }) {
                       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-6 border-t border-gray-200">
                         <button
                           type="button"
-                          className="flex items-center justify-center sm:justify-start gap-2 text-blue-600 hover:text-blue-700 cursor-pointer transition-colors text-sm sm:text-base font-medium"
+                          className="flex items-center justify-center sm:justify-start gap-2 text-primary hover:text-blue-700 cursor-pointer transition-colors text-sm sm:text-base font-medium"
                           onClick={() => handleEdit(q)}
                         >
                           <Edit3 className="w-4 h-4" />
@@ -555,7 +555,7 @@ export function Step2Questions({ onBack, onSubmit, isSubmitting }) {
         </button>
       </div>
 
-      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-6">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-6 bg-white p-4 rounded-lg">
         <button
           type="button"
           className="btn-cancel w-full sm:w-auto cursor-pointer"

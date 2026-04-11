@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils/helpers';
 import { Loader2 } from 'lucide-react';
 
 const variants = {
-  primary: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm',
-  secondary: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm',
+  primary: 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white shadow-sm',
+  secondary: 'bg-[var(--secondary)] hover:opacity-95 text-white border border-[var(--secondary)] shadow-sm',
   danger: 'bg-red-500 hover:bg-red-600 text-white shadow-sm',
   ghost: 'hover:bg-gray-100 text-gray-600',
-  outline: 'border border-indigo-600 text-indigo-600 hover:bg-indigo-50',
+  outline: 'border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary-soft)]',
 };
 
 const sizes = {
@@ -38,7 +38,7 @@ export default function Button({
       onClick={onClick}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 font-medium cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
+        'inline-flex items-center justify-center gap-2 font-medium cursor-pointer transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2',
         variants[variant],
         sizes[size],
         fullWidth && 'w-full',

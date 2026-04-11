@@ -86,7 +86,7 @@ export default function LoginPage() {
               <h1 className="text-xl font-bold text-gray-900 tracking-wide">
                 Sign In
               </h1>
-              <div className="w-10 h-[3px] bg-[#6633FF] rounded-full mt-2" />
+              <div className="w-10 h-[3px] bg-primary rounded-full mt-2" />
             </div>
 
             <form
@@ -103,8 +103,8 @@ export default function LoginPage() {
                   {...register("email")}
                   type="text"
                   placeholder="Enter your email/User ID"
-                  className={`w-full px-3 py-2.5 text-sm text-gray-800 bg-white rounded border outline-none transition-all focus:ring-2 focus:ring-[#6633FF]/20 focus:border-[#6633FF] ${
-                    errors.email ? "border-red-400" : "border-[#6633FF]"
+                  className={`w-full px-3 py-2.5 text-sm text-gray-800 bg-white rounded border outline-none transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary ${
+                    errors.email ? "border-red-400" : "border-primary"
                   }`}
                 />
                 {errors.email && (
@@ -124,7 +124,7 @@ export default function LoginPage() {
                     {...register("password")}
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className={`w-full px-3 py-2.5 pr-10 text-sm text-gray-800 bg-white rounded border outline-none transition-all focus:ring-2 focus:ring-[#6633FF]/20 focus:border-[#6633FF] ${
+                    className={`w-full px-3 py-2.5 pr-10 text-sm text-gray-800 bg-white rounded border outline-none transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary ${
                       errors.password ? "border-red-400" : "border-gray-300"
                     }`}
                   />
@@ -148,7 +148,7 @@ export default function LoginPage() {
               <div className="flex justify-end">
                 <button
                   type="button"
-                  className="text-sm text-[#6633FF] hover:underline bg-transparent border-none cursor-pointer"
+                  className="text-sm text-primary hover:underline bg-transparent border-none cursor-pointer"
                 >
                   Forget Password?
                 </button>
@@ -158,7 +158,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-2 bg-[#6633FF] hover:bg-[#5522ee] text-white text-[15px] font-semibold py-3 rounded cursor-pointer transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-[#5522ee] text-white text-[15px] font-semibold py-3 rounded cursor-pointer transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <>
@@ -192,9 +192,7 @@ export default function LoginPage() {
             </form>
           </div>
           <div className="w-full max-w-[460px] mt-4 bg-[#F8F8FF] border border-[#E5E1FF] rounded-md p-4 text-xs text-gray-700">
-            <p className="font-semibold text-[#6633FF] mb-2">
-              Demo Credentials
-            </p>
+            <p className="font-semibold text-primary mb-2">Demo Credentials</p>
 
             <div className="space-y-2">
               <button
