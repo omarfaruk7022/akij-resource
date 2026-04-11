@@ -51,14 +51,6 @@ export default function LoginPage() {
       <ToastContainer />
       <Navbar />
       <div className="min-h-screen flex flex-col bg-[#EBEBEB]">
-        {/* Browser tab bar */}
-        {/* <div className="bg-[#D6D6D6] border-b border-[#C4C4C4] px-4 py-1.5">
-          <span className="text-xs text-[#555555]">Login</span>
-        </div> */}
-
-        {/* Navbar */}
-
-        {/* Main */}
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
           <div className="bg-white rounded-md w-full max-w-[460px] px-10 py-10 shadow-md">
             {/* Lock icon + heading */}
@@ -191,35 +183,46 @@ export default function LoginPage() {
               </button>
             </form>
           </div>
-          <div className="w-full max-w-[460px] mt-4 bg-[#F8F8FF] border border-[#E5E1FF] rounded-md p-4 text-xs text-gray-700">
-            <p className="font-semibold text-primary mb-2">Demo Credentials</p>
+          <div className="w-full max-w-[460px] mt-4 bg-[#F8F8FF] border border-[#E5E1FF] rounded-xl overflow-hidden text-sm text-gray-700">
+            {/* Header */}
+            <div className="px-4 py-3 border-b border-[#E5E1FF] bg-[#F1EFFF]">
+              <p className="font-semibold text-primary">Demo Credentials</p>
+            </div>
 
-            <div className="space-y-2">
+            {/* Table */}
+            <div className="divide-y divide-[#E5E1FF]">
+              {/* Employer Row */}
               <button
-                className="flex justify-between cursor-pointer w-full"
                 onClick={() => {
                   setValue("email", "employer@demo.com");
                   setValue("password", "demo123");
                 }}
+                className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#EEEAFE] transition"
               >
                 <span className="text-gray-500">Employer</span>
-                <span className="font-medium">employer@demo.com</span>
+                <span className="font-medium text-gray-800">
+                  employer@demo.com
+                </span>
               </button>
 
+              {/* Candidate Row */}
               <button
-                className="flex justify-between cursor-pointer w-full"
                 onClick={() => {
                   setValue("email", "candidate@demo.com");
                   setValue("password", "demo123");
                 }}
+                className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#EEEAFE] transition"
               >
                 <span className="text-gray-500">Candidate</span>
-                <span className="font-medium">candidate@demo.com</span>
+                <span className="font-medium text-gray-800">
+                  candidate@demo.com
+                </span>
               </button>
 
-              <div className="flex justify-between border-t border-gray-300 pt-2 mt-2">
+              {/* Password Row */}
+              <div className="flex items-center justify-between px-4 py-3 bg-white">
                 <span className="text-gray-500">Password</span>
-                <span className="font-medium">demo123</span>
+                <span className="font-medium text-gray-800">demo123</span>
               </div>
             </div>
           </div>
