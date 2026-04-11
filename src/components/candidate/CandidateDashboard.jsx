@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BookOpen } from "lucide-react";
 import CandidateExamCard from "@/components/candidate/CandidateExamCard";
+import Image from "next/image";
 
 async function fetchAvailableExams() {
   const res = await axios.get("/api/exams", { withCredentials: true });
@@ -88,15 +89,22 @@ export default function CandidateDashboard() {
             ))}
           </div>
         ) : filteredExams.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-14 h-14 bg-[#F0EBFF] rounded-xl flex items-center justify-center mb-4">
-              <BookOpen className="w-7 h-7 text-primary" />
+          <div className="flex flex-col items-center justify-center py-10 text-center bg-white rounded-lg ">
+            <div className="mb-5">
+              <Image
+                src="/images/empty-online-test.png"
+                alt="No online tests available"
+                width={120}
+                height={113}
+                priority
+              />
             </div>
-            <h3 className="text-sm font-semibold text-gray-800 mb-1">
-              No Online Tests Yet
+            <h3 className="text-base font-semibold text-[#1A1A1A] mb-2">
+              No Online Test Available
             </h3>
-            <p className="text-xs text-gray-500 mb-5">
-              Check back later for assigned assessments.
+            <p className="max-w-full text-sm leading-6 text-[#777] mb-6">
+              Currently, there are no online tests available. Please check back
+              later for updates.
             </p>
           </div>
         ) : (
