@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db/mongoose";
 import Exam from "@/lib/models/Exam";
+import User from "@/lib/models/User";
 import Submission from "@/lib/models/Submission";
 import { getTokenFromRequest } from "@/lib/utils/authMiddleware";
 import { verifyToken } from "@/lib/utils/jwt";
